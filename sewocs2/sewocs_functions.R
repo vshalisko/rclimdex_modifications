@@ -122,8 +122,8 @@ plotOrASCII<-function(
 	# Note: the Web page requests neither TN50p or TX50p
 	indices2 = c(
 		"DTR",
-		"RX1day",
-		"RX5day",
+		"Rx1day",
+		"Rx5day",
 		"TN10p",
 		"TN50p",
 		"TN90p",
@@ -162,7 +162,8 @@ plotOrASCII<-function(
 		# else if (season=="SON") 
 	}
 	
-	if (outputType=="ASCII") {
+	if (outputType=="ASCII")
+	{
 		## ASCII-Table
 		dataMatrix<-matrix(c(year,data),ncol=2)
 		dimnames(dataMatrix)<-list(NULL,c("year",paste(climateIndex,"_",season,sep="")))
@@ -170,69 +171,71 @@ plotOrASCII<-function(
   		# it can only return the data matrix at present
   		return(dataMatrix)
   	}
-
-	if (outputType!="Plot") {
+	else if (outputType!="Plot")
+	{
 		stop(paste("Unknown outputType",outputType,sep=":") , call. = FALSE, domain = NULL)
 	}
-
-	## otherwise, make a plot
-	 
-	library(RGtk2) 
-	library(cairoDevice)	
-
-	# create a pixmap and tell cairoDevice to draw to it 
-	pixmap <- gdkPixmapNew(w=800, h=600, depth=24) 
-	asCairoDevice(pixmap) 
-
-	# adjust y-axis +/- 20% of data range to avoid collision w legend
-	yrange=max(data, na.rm = TRUE)-min(data, na.rm = TRUE)
-	ymargin=0.2*yrange
-	ymin=min(data,na.rm = TRUE)-ymargin
-	ymax=max(data,na.rm = TRUE)+ymargin
-	
-	plot(year, data, xlab="Year", xlim=c(startYear,endYear), ylim=c(ymin,ymax), ylab=paste(climateIndex,"[",unit(climateIndex),"]"), type="b", col="darkred")
-
-	## calculate trend only if at least 10yrs with data?!
-	if(sum(is.na(data)) >= (endYear - startYear + 1 - 10)) 
+	else if (outputType=="Plot") 
 	{
-		betahat<-NA
-		betastd<-NA
-		pvalue<-NA
-		fit<-NA
-		r2<-NA
-		pvalue<-NA
-		error<-TRUE
-		errMsg<-"Trend requires at least 10 years of data points."
-	} else {
-		fit<-lsfit(year,data)
-		out<-ls.print(fit,print.it=F)
-		r2<-round(100*as.numeric(out$summary[1,2]),1)
-		pvalue<-round(as.numeric(out$summary[1,6]),3)
-		betahat<-round(as.numeric(out$coef.table[[1]][2,1]),3)
-		betastd<-round(as.numeric(out$coef.table[[1]][2,2]),3)
-		error<-FALSE
-		#abline(fit, lwd=3)
-	}
-	
-	## smooth line (cubic spline)
-	#xy<-cbind(year,data)
-	#xy<-na.omit(xy)
-	#xy.spl<-smooth.spline(xy[,1],xy[,2],df=20)
-	#lines(xy.spl,lwd=3,lty=2)
-	#lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2)
+		## otherwise, make a plot
+	 
+		library(RGtk2) 
+		library(cairoDevice)	
 
-	## binomial filter
-	dataf <- binfil(data,21)
-	xyf<-cbind(year,dataf)
-	lines(xyf,lwd=3,lty=2)
+		# create a pixmap and tell cairoDevice to draw to it 
+		pixmap <- gdkPixmapNew(w=800, h=600, depth=24) 
+		asCairoDevice(pixmap) 
 
-	maintit=paste(climateIndex, stationId, stationName, paste(startYear, endYear, sep="-"), season, sep=" ")
-	title(main=maintit)
-	title(sub="Note: These data are not quality-controlled!",cex=0.5)
+		# adjust y-axis +/- 20% of data range to avoid collision w legend
+		yrange=max(data, na.rm = TRUE)-min(data, na.rm = TRUE)
+		ymargin=0.2*yrange
+		ymin=min(data, na.rm = TRUE)-ymargin
+		ymax=max(data, na.rm = TRUE)+ymargin
 	
-	if (!error){
-		legend(
-				"bottomleft",
+		plot(year, data, xlab="Year", xlim=c(startYear,endYear), ylim=c(ymin,ymax), ylab=paste(climateIndex,"[",unit(climateIndex),"]"), type="b", col="darkred")
+
+		## calculate trend only if at least 10yrs with data?!
+		if(sum(is.na(data)) >= (endYear - startYear + 1 - 10)) 
+		{
+			betahat<-NA
+			betastd<-NA
+			pvalue<-NA
+			fit<-NA
+			r2<-NA
+			pvalue<-NA
+			error<-TRUE
+			errMsg<-"Trend requires at least 10 years of data points."
+		} else
+		{
+			fit<-lsfit(year,data)
+			out<-ls.print(fit,print.it=F)
+			r2<-round(100*as.numeric(out$summary[1,2]),1)
+			pvalue<-round(as.numeric(out$summary[1,6]),3)
+			betahat<-round(as.numeric(out$coef.table[[1]][2,1]),3)
+			betastd<-round(as.numeric(out$coef.table[[1]][2,2]),3)
+			error<-FALSE
+			#abline(fit, lwd=3)
+		}
+	
+		## smooth line (cubic spline)
+		#xy<-cbind(year,data)
+		#xy<-na.omit(xy)
+		#xy.spl<-smooth.spline(xy[,1],xy[,2],df=20)
+		#lines(xy.spl,lwd=3,lty=2)
+		#lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2)
+
+		## binomial filter
+		dataf <- binfil(data,21)
+		xyf<-cbind(year,dataf)
+		lines(xyf,lwd=3,lty=2)
+
+		maintit=paste(climateIndex, stationId, stationName, paste(startYear, endYear, sep="-"), season, sep=" ")
+		title(main=maintit)
+		title(sub="Note: These data are not quality-controlled!",cex=0.5)
+	
+		if (!error)
+		{
+			legend( "bottomleft",
 				legend=c(paste("Data", climateIndex,"( unit:",unit(climateIndex),")"),
 						"21-yr binomial filter",
 						"Linear trend (least squares):",
@@ -240,21 +243,23 @@ plotOrASCII<-function(
 				col=c("darkred","black","white","white"),
 				lty=c(1,2,0,0),
 				pch=c('o','-',3,3),lwd=c(1,3,0,0)
-		)
-	} else {
-		legend(
-				"bottomleft",
-				legend=c(paste("Data",index),errMsg), 
-				col=c("darkred","black","white"),
-				pch=c('o','-',3),lwd=c(1,3,0))
-	}
+			)
+		} 
+		else
+		{
+			legend(	"bottomleft",
+			legend=c(paste("Data",index),errMsg), 
+					col=c("darkred","black","white"),
+					pch=c('o','-',3),lwd=c(1,3,0))
+		}
 		
-	# convert the pixmap to a pixbuf 
-	plot_pixbuf <- gdkPixbufGetFromDrawable(NULL, pixmap, pixmap$getColormap(), 0, 0, 0, 0, 800, 600) 
+		# convert the pixmap to a pixbuf 
+		plot_pixbuf <- gdkPixbufGetFromDrawable(NULL, pixmap, pixmap$getColormap(), 0, 0, 0, 0, 800, 600) 
 	
-	# save the pixbuf to a raw vector 
-	buffer <- gdkPixbufSaveToBufferv(plot_pixbuf, "png", character(0), character(0))$buffer
+		# save the pixbuf to a raw vector 
+		buffer <- gdkPixbufSaveToBufferv(plot_pixbuf, "png", character(0), character(0))$buffer
 	
-	return(buffer)
+		return(buffer)
+	}
 }
 
