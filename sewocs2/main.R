@@ -1,6 +1,6 @@
 ###############################################################################
 # main R script to test the plotOrASCII function
-# defined in sewocs_functions.R
+# that is defined in sewocs_functions.R
 #
 # Use (gnome): Rscript main.R --vanilla --slave --quiet --no-save 'args1="c"' 'arg2=n' ...
 # Use (ssh): DISPLAY=:200.0 Rscript main.R --vanilla --slave --quiet --no-save ...
@@ -57,7 +57,7 @@ if (class(output) == "try-error"){
 	close(zz)
 } else if (outputType=="ASCII") {
 	print("got data")
-	print(output)
+	print(output) # Print the raw output to the console
 	write.table(output, file=outputFilePath, row.names=F)
 }
 
