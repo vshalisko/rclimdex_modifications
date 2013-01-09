@@ -23,10 +23,8 @@ season<-"ANN" #choose from "JAN","FEB",...,"DEC","ANN","DJF","MAM","JJA","SON"
 
 indexFileName = paste(stationId,"_", climateIndex,".txt",sep="")
 
-inputDataDir<-"/scratch/climdex/ghcn/current/sewocs"
-stationFilePath<-paste(inputDataDir,countryId,stationId,indexFileName,sep="/")
-#inputDataDir<-"./data"
-#stationFilePath<-paste(inputDataDir,indexFileName,sep="/")
+inputDataDir<-"/scratch/climdex/ghcndex/current/stn-indices"
+stationFilePath<-paste(inputDataDir,climateIndex,indexFileName,sep="/")
 
 source('sewocs_functions.R')
 

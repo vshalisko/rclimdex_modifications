@@ -1,7 +1,7 @@
 # main R script to test the plotOrASCII function
 # defined in sewocs_functions_2.R
 #
-# Use: R < testASCIISuccess.R --no-save
+# Use: Rscript --no-save testASCIISuccess.R
 #
 # The resulting image may be branded with a logo, e.g. using ImageMagick 6.x,
 # convert plotTimeseries.png -composite logo_unsw_small.png -geometry +20+555 -composite composite.png
@@ -20,8 +20,8 @@ season<-"ANN" #choose from "JAN","FEB",...,"DEC","ANN","DJF","MAM","JJA","SON"
 
 indexFileName = paste(stationId,"_", climateIndex,".txt",sep="")
 
-inputDataDir<-"/scratch/climdex/ghcn/current/sewocs"
-stationFilePath<-paste(inputDataDir,countryId,stationId,indexFileName,sep="/")
+inputDataDir<-"/scratch/climdex/ghcndex/current/stn-indices"
+stationFilePath<-paste(inputDataDir,climateIndex,indexFileName,sep="/")
 
 source('sewocs_functions.R')
 

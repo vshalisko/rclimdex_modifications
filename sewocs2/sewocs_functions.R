@@ -161,6 +161,10 @@ plotOrASCII<-function(
 		# else if (season=="JJA") 
 		# else if (season=="SON") 
 	}
+dd$V1
+dd$V2
+dd$V14
+data
 	
 	if (outputType=="ASCII") {
 		## ASCII-Table
