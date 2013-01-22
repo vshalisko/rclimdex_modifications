@@ -78,6 +78,7 @@ plotOrASCII<-function(
 	#print(stationFile)
 
 	missingValue<-"-99.9"
+	error<-FALSE  ## to start with no error message	
 	
 	if(!file.exists(stationFile)) {
 		stop("Station does not provide the data for the index", call. = FALSE, domain = NULL)
@@ -185,17 +186,33 @@ plotOrASCII<-function(
 		# create a pixmap and tell cairoDevice to draw to it 
 		pixmap <- gdkPixmapNew(w=800, h=600, depth=24) 
 		asCairoDevice(pixmap) 
-
-		# adjust y-axis +/- 20% of data range to avoid collision w legend
-		yrange=max(data, na.rm = TRUE)-min(data, na.rm = TRUE)
-		ymargin=0.2*yrange
-		ymin=min(data, na.rm = TRUE)-ymargin
-		ymax=max(data, na.rm = TRUE)+ymargin
 	
+		## minimum 1 valid data needed to determine data range
+		if(sum(!is.na(data)) >= 1) 
+		{
+			yrange<-max(data, na.rm = TRUE)-min(data, na.rm = TRUE)
+			ymargin<-0.2*yrange
+			ymin<- min(data, na.rm = TRUE)-ymargin
+			ymax<- max(data, na.rm = TRUE)+ymargin
+		} else
+		{
+			ymin<- -1
+			ymax<- 1
+			error<-TRUE
+			errMsg<-"No valid data available for this request."
+		}
+
 		plot(year, data, xlab="Year", xlim=c(startYear,endYear), ylim=c(ymin,ymax), ylab=paste(climateIndex,"[",unit(climateIndex),"]"), type="b", col="darkred")
+		mtext(text=paste("copyright www.climdex.org,",Sys.Date()), side=4)
+
+		if (error)
+		{
+			text(x=(startYear+(endYear-startYear)/2), y=0, labels=errMsg)
+		}
 
 		## calculate trend only if at least 10yrs with data?!
-		if(sum(is.na(data)) >= (endYear - startYear + 1 - 10)) 
+		#if(sum(!is.na(data)) >= (endYear - startYear + 1 - 10)) 
+		if(sum(!is.na(data)) < 10) 
 		{
 			betahat<-NA
 			betastd<-NA
@@ -213,10 +230,12 @@ plotOrASCII<-function(
 			pvalue<-round(as.numeric(out$summary[1,6]),3)
 			betahat<-round(as.numeric(out$coef.table[[1]][2,1]),3)
 			betastd<-round(as.numeric(out$coef.table[[1]][2,2]),3)
-			error<-FALSE
+			#error<-FALSE
 			#abline(fit, lwd=3)
+			# adjust y-axis +/- 20% of data range to avoid collision w legend
 		}
 	
+
 		## smooth line (cubic spline)
 		#xy<-cbind(year,data)
 		#xy<-na.omit(xy)
@@ -248,7 +267,7 @@ plotOrASCII<-function(
 		else
 		{
 			legend(	"bottomleft",
-			legend=c(paste("Data",index),errMsg), 
+			legend=c(paste("Data",climateIndex),errMsg), 
 					col=c("darkred","black","white"),
 					pch=c('o','-',3),lwd=c(1,3,0))
 		}
