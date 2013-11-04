@@ -2,7 +2,22 @@
 # main R script to test the plotOrASCII function
 # that is defined in sewocs_functions.R
 #
-# Use (gnome): Rscript main.R --vanilla --slave --quiet --no-save 'args1="c"' 'arg2=n' ...
+# Usage (gnome): Rscript main.R --vanilla --slave --quiet --no-save \
+#              'outputType="..."' 'stationId=....' ...
+
+# args can be set interactively by using testSewocs.sh
+
+# args required are:
+#				outputType,
+#				stationId,
+#				countryId,
+#				stationName,
+#				climateIndex,
+#				startYear,
+#				endYear,
+#				season,
+#				stationFilePath
+
 # Use (ssh): DISPLAY=:200.0 Rscript main.R --vanilla --slave --quiet --no-save ...
 # For ssh, Xvfb must be running with screen :200.0
 # It requires GTK+, libcairo, freeType
