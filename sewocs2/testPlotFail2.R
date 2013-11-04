@@ -1,8 +1,8 @@
-# main R script to test the stationTimeSeries functon
-# defined in stationTimeSeries.R
+# main R script to test the plotOrASCII() functon
+# defined in sewocs_functions.R
 #
-# Use (gnome): R < testPlotFail2.R --no-save
-# Use (ssh): DISPLAY=:200.0 R < testPlotFail2.R --no-save
+# Usage (gnome): R < testPlotFail2.R --no-save
+# Usage (ssh): DISPLAY=:200.0 R < testPlotFail2.R --no-save
 # For ssh, Xvfb must be running with screen :200.0
 #
 # Author: yoichi

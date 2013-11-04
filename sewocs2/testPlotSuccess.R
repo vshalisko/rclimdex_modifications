@@ -1,8 +1,9 @@
-# main R script to test the plotOrASCII function
+###############################################################################
+# main R script to test the plotOrASCII function()
 # defined in sewocs_functions.R
 #
-# Use (gnome): R < testPlotSuccess.R --no-save
-# Use (ssh): DISPLAY=:200.0 R < testPlotSuccess.R --no-save
+# Usage (gnome): R < testPlotSuccess.R --no-save
+# Usage (ssh): DISPLAY=:200.0 R < testPlotSuccess.R --no-save
 # For ssh, Xvfb must be running with screen :200.0
 # It requires GTK+, libcairo, freeType
 #

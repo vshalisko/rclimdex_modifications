@@ -1,7 +1,7 @@
-# main R script to test the plotOrASCII function
-# defined in sewocs_functions_2.R
+# main R script to test the plotOrASCII() function
+# defined in sewocs_functions.R
 #
-# Use: Rscript --no-save testASCIISuccess.R
+# Usage: Rscript --no-save testASCIISuccess.R
 #
 # The resulting image may be branded with a logo, e.g. using ImageMagick 6.x,
 # convert plotTimeseries.png -composite logo_unsw_small.png -geometry +20+555 -composite composite.png

@@ -2,6 +2,22 @@
 
 # bash script to set env for R script, which calculates
 # timeseries or ASCII data file.s
+
+# This script set the following args for main.R interactively,
+# by using ENVIRONMENT varaibles.
+
+# ${R_CMD} main.R \
+# "outputType='${SEWOCS_OUTPUT_TYPE}'" \
+# "stationId='${SEWOCS_STATION_ID}'" \
+# "countryId='NOT_USED'" \
+# "stationName='TEST'" \
+# "climateIndex='${SEWOCS_CLIMATE_INDEX}'" \
+# "startYear=${SEWOCS_START_YEAR}" \
+# "endYear=${SEWOCS_END_YEAR}" \
+# "season='${SEWOCS_SEASON}'" \
+# "stationFilePath='${SEWOCS_DATA_PATH}'" \
+# "outputFilePath='${SEWOCS_OUTFILE_PATH}'"
+#
 #
 # Yoichi Takayama @ 08 Jan 2013
 # y.takayama@unsw.edu.au
