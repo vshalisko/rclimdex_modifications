@@ -19,6 +19,9 @@
 # TODO: Use a compiled version of the script when it is complete
 #
 # Author: Markus Donat <m.donat @ unsw.edu.au>, Yoichi Takayama <y.takayama @ unsw.edu.au
+# Revision: MD_2013-10-07: 
+#	For ASCII data, MISSING VALUE (NA) is replaced with -99.9, 
+#	because R-Java bridge is not converting R's NA to Java's NaN correctly.
 ###############################################################################
 
 ## define function for binomial filter
@@ -169,6 +172,9 @@ plotOrASCII<-function(
 		dataMatrix<-matrix(c(year,data),ncol=2)
 		dimnames(dataMatrix)<-list(NULL,c("year",paste(climateIndex,"_",season,sep="")))
   		dataFrame<-as.data.frame(dataMatrix)
+  		
+  		## change missing values (NaN) to -99.9, otherwise Java cannot handle correctly
+  		dataMatrix[is.na(dataMatrix)] <- -99.9
   		# it can only return the data matrix at present
   		return(dataMatrix)
   	}
