@@ -22,6 +22,8 @@
 # Revision: MD_2013-10-07: 
 #	For ASCII data, MISSING VALUE (NA) is replaced with -99.9, 
 #	because R-Java bridge is not converting R's NA to Java's NaN correctly.
+# Revision: YT_2013-11-05: 
+#	dataSourse was added to the plotOrASCII. countryId was removed
 ###############################################################################
 
 ## define function for binomial filter
@@ -59,9 +61,9 @@ unit <- function(index) {
 }
 
 plotOrASCII<-function(
+		dataSource,
 		outputType,
 		stationId,
-		countryId,
 		stationName,
 		climateIndex,
 		startYear,
@@ -70,9 +72,9 @@ plotOrASCII<-function(
 		stationFile
 )
 {
+	#print(dataSource)
 	#print(outputType)
 	#print(stationId)
-	#print(countryId)
 	#print(stationName)
 	#print(climateIndex)
 	#print(startYear)
