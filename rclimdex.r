@@ -2,6 +2,7 @@
 # R language with TCL/TK package
 # Programmed by Yujun Ouyang,Mar,2004
 # rewritten by Yang Feng, July 2004
+# modified by Viacheslav Shalisko 2015
 
 # version 1.0, 2004-10-14
 # modified, 2006-01-24, 
@@ -38,56 +39,47 @@ fontHeading2<-tkfont.create(family="times",size=14,weight="bold")
 fontTextLabel <- tkfont.create(family="times",size=12)
 fontFixedWidth <- tkfont.create(family="courier",size=12)
 # initial value for check box
-cbvalue1<-tclVar("1");  cbvalue2<-tclVar("1");  cbvalue3<-tclVar("1")
-cbvalue4<-tclVar("1");  cbvalue5<-tclVar("1");  cbvalue6<-tclVar("1")
-cbvalue7<-tclVar("1");  cbvalue8<-tclVar("1");  cbvalue9<-tclVar("1")
-cbvalue10<-tclVar("1"); cbvalue11<-tclVar("1"); cbvalue12<-tclVar("1")
-cbvalue13<-tclVar("1"); cbvalue14<-tclVar("1"); cbvalue15<-tclVar("1")
-cbvalue16<-tclVar("0"); cbvalue17<-tclVar("0"); cbvalue18<-tclVar("0")
-cbvalue19<-tclVar("0"); cbvalue21<-tclVar("1")
+cbvalue1<-tclVar("1");cbvalue2<-tclVar("1");cbvalue3<-tclVar("1")
+cbvalue4<-tclVar("1");cbvalue5<-tclVar("1");cbvalue6<-tclVar("1")
+cbvalue7<-tclVar("1");cbvalue8<-tclVar("1");cbvalue9<-tclVar("1")
+cbvalue10<-tclVar("1");cbvalue11<-tclVar("1");cbvalue12<-tclVar("1")
+cbvalue13<-tclVar("1");cbvalue14<-tclVar("1");cbvalue15<-tclVar("1")
+cbvalue16<-tclVar("0");cbvalue17<-tclVar("0");cbvalue18<-tclVar("0")
+cbvalue19<-tclVar("0");cbvalue21<-tclVar("1")
 #  initial value for parameters
-stations<-tclVar(paste(""));   stdt<-tclVar(paste("3"))
-Entry1<-tclVar(paste("1961")); Entry2<-tclVar(paste("1990"))
+stations<-tclVar(paste(""));stdt<-tclVar(paste("3"))
+Entry1<-tclVar(paste("1961"));Entry2<-tclVar(paste("1990"))
 #Entry3<-tclVar(paste("5"))
 Entry4<-tclVar(paste("0"))
 Entry5<-tclVar(paste("0"))
-Entry6<-tclVar(paste("25"));   Entry7<-tclVar(paste("0"))
-Entry8<-tclVar(paste("20"));   Entry9<-tclVar(paste("0"))
-#Entry10<-tclVar(paste("10")); Entry11<-tclVar(paste("5"))
+Entry6<-tclVar(paste("25"));Entry7<-tclVar(paste("0"))
+Entry8<-tclVar(paste("20"));Entry9<-tclVar(paste("0"))
+#Entry10<-tclVar(paste("10"));Entry11<-tclVar(paste("5"))
 Entry12<-tclVar(paste("25"))
 dayim<-as.integer(c(31,28,31,30,31,30,31,31,30,31,30,31))
-crt<-3;      flag=F
-treshold=5;  winsize=5
-uu<-25;      lu<-20
-ul<-0;       ll<-0
+crt<-3;flag=F
+treshold=5;winsize=5
+uu<-25;lu<-20
+ul<-0;ll<-0
 
-title1<-"Plot of Ind143";   title2<-"Ind143";   title3<-"Years"
-
-#----------- frc -----------------------------------------
+title1<-"Plot of Ind143";title2<-"Ind143";title3<-"Years"
 frc<-function(dd,year,month,item){
 
               a<-dd[dd$year==year & dd$month==month,item]
               a<-a[a>-99]
               frc<-length(a)/rdim(year,month)
-  }#end
-#----------- frc ends -----------------------------------------
+                                   }#end
 
-#----------- done -----------------------------------------
 done<-function(){tkdestroy(start1)}
-#----------- done ends -----------------------------------------
 
-#----------- percentile -----------------------------------------
 percentile<-function(n,x,pctile){
 	 x1<-x[is.na(x)==F]
 	 n1<-length(x1)
-     a<-mysort(x1,decreasing=F)
-     b<-n1*pctile+0.3333*pctile+0.3333
-     bb<-trunc(b)
-     percentile<-a[bb]+(b-bb)*(a[bb+1]-a[bb]) 
- }#end
-#----------- percentile ends -----------------------------------------
+         a<-mysort(x1,decreasing=F)
+         b<-n1*pctile+0.3333*pctile+0.3333
+         bb<-trunc(b)
+         percentile<-a[bb]+(b-bb)*(a[bb+1]-a[bb]) }#end
 
-#----------- pplotts -----------------------------------------
 pplotts<-function(var="prcp",type="h",tit=NULL){
   if(var=="dtr"){
   ymax<-max(dd[,"tmax"]-dd[,"tmin"],na.rm=T)
@@ -100,6 +92,9 @@ pplotts<-function(var="prcp",type="h",tit=NULL){
   else{
   ymax<-max(dd[,var],na.rm=T)+1
   ymin<-min(dd[,var],na.rm=T)-1
+  }
+  if(ymin>0){
+    ymin<-0
   }
   if(is.na(ymax)|is.na(ymin)|(ymax==-Inf)|(ymin==-Inf)){
     ymax<-100
@@ -122,14 +117,12 @@ pplotts<-function(var="prcp",type="h",tit=NULL){
     tt<-seq(1,length(ttmp))
     tt<-tt[is.na(ttmp)==T]
     axis(side=1,at=at,labels=c(i:(i+9)))
-    for(k in 1:10) abline(v=at[k],col="yellow")
+    for(k in 1:10) abline(v=at[k],col="lightgreen")
     lines(tt,rep(0,length(tt)),type="p",col="red")
     title(paste("Station: ",tit,", ",i,"~",min(i+9,yeare),",  ",var,sep=""))
   }
 }
-#----------- pplotts ends -----------------------------------------
 
-#----------- ind143gsl -----------------------------------------
 ind143gsl<-function(){
   if (latitude<0) south=T else south=F
   if (latitude<0) eyear=yeare-1 else eyear=yeare
@@ -217,24 +210,20 @@ ind143gsl<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"gsl",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
   
-  nam2<-paste(outjpgdir,paste(ofilename,"_GSL.jpg",sep=""),sep="/")
-  jpeg(file=nam2,width=1024,height=768)
+  nam2<-paste(outjpgdir,paste(ofilename,"_GSL.png",sep=""),sep="/")
+  png(file=nam2,width=1024,height=768,bg="white")
+  plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Year",ylab="GSL")
+  dev.off()
+  nam3<-paste(outjpgdir,paste(ofilename,"_GSL.pdf",sep=""),sep="/")
+  pdf(file=nam3)
   plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Year",ylab="GSL")
   dev.off()
 }
-#----------- ind143gsl ends -----------------------------------------
 
-#----------- dataext -----------------------------------------
-# seems this function is never used...
 dataext<-function(dd,year,month,day,item){
-   Dataext<-dd[dd$year==year & dd$month==month & dd$day==day,item]
+dataext<-dd[dd$year==year & dd$month==month & dd$day==day,item]
 }
-#----------- dataext ends -----------------------------------------
 
-
-# ----------- leapyear -----------------------------------------
-# check if 'year' is a leap year
-# returns T or F
 leapyear<-function(year){
     remainder400 <-trunc(year-400*trunc(year/400))
     remainder100 <-trunc(year-100*trunc(year/100))
@@ -248,12 +237,7 @@ leapyear<-function(year){
 	 }
        }
 }
-# ----------- leapyear ends -----------------------------------------
 
-
-# ----------- rdim -----------------------------------------
-# day # in a month
-#
 rdim<-function(year,month) {
    a<-leapyear(year) 
    if (month==1) rdim<-31
@@ -269,10 +253,9 @@ rdim<-function(year,month) {
    else if (month==12) rdim<-31
    else if (a==T & month==2) rdim<-29
    else rdim<-28  
- }
-# ----------- rdim ends -----------------------------------------
+       }
 
-# ----------- qcontrol -----------------------------------------
+
 qcontrol<-function(){
   tkmessageBox(message=paste("Data QC(",ofilename,") may take a few minutes, click OK to continue.",sep=""))
 # output records of problematic like prcp <0 and NA
@@ -288,8 +271,8 @@ if(sum(ddu)>0){
   stop(paste("QC stopped due to duplicated date, please check ",nam1,sep=""))
 }
   
-mid<-dd[is.na(dd$prcp)==F,]  # choose non-MISSING PRCP
-mid<-mid[mid$prcp<0,]        # Is there unreasonable PRCP?
+mid<-dd[is.na(dd$prcp)==F,]
+mid<-mid[mid$prcp<0,]
 #dd[is.na(dd$prcp)==F & dd$prcp<0,"prcp"]<-NA
 nam1<-paste(outlogdir,paste(ofilename,"_prcpQC.csv",sep=""),sep="/")
 write.table(mid,file=nam1,append=F,quote=F,sep=", ",row.names=F)
@@ -300,16 +283,16 @@ pdf(file=nam1)
 ttmp<-dd[dd$prcp>=1,"prcp"]
 ttmp<-ttmp[is.na(ttmp)==F]
 if(length(ttmp)>30){
-  hist(ttmp,main=paste("Histogram for Station:",ofilename," of PRCP>=1mm",sep=""),breaks=c(seq(0,20,2),max(30,ttmp)),xlab="",col="green",freq=F)
+  hist(ttmp,main=paste("Histogram for Station:",ofilename," of PRCP>=1mm",sep=""),breaks=c(seq(0,20,2),max(30,ttmp)),xlab="",col="gray",freq=F)
   lines(density(ttmp,bw=0.2,from=1),col="red")
 }
-  pplotts(var="prcp",tit=ofilename)
-  dev.off()
-  nam1<-paste(outlogdir,paste(ofilename,"_tmaxPLOT.pdf",sep=""),sep="/")
-  pdf(file=nam1)
-  pplotts(var="tmax",type="l",tit=ofilename)
-  dev.off()
-  nam1<-paste(outlogdir,paste(ofilename,"_tminPLOT.pdf",sep=""),sep="/")
+pplotts(var="prcp",tit=ofilename)
+dev.off()
+nam1<-paste(outlogdir,paste(ofilename,"_tmaxPLOT.pdf",sep=""),sep="/")
+pdf(file=nam1)
+pplotts(var="tmax",type="l",tit=ofilename)
+dev.off()
+nam1<-paste(outlogdir,paste(ofilename,"_tminPLOT.pdf",sep=""),sep="/")
 pdf(file=nam1)
 pplotts(var="tmin",type="l",tit=ofilename)
 dev.off()
@@ -334,7 +317,7 @@ dimnames(dd)[[2]][7]<-"dtr"
 if (dim(temiss)[1]>0) {
   tkmessageBox(message=paste("Errors in temperature, please check the log file",nam1,sep=" "))
    # records with abs(tmax)>=70, abs(tmin)>=70 set to NA
-   dd[is.na(dd[,5])==F & abs(dd[,5])>=70,5]<-NA     # This is different from Fclimdex code  !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   dd[is.na(dd[,5])==F & abs(dd[,5])>=70,5]<-NA
    dd[is.na(dd[,6])==F & abs(dd[,6])>=70,6]<-NA
    # records with tmax < tmin are set to NA
     dd[is.na(dd[,5])==F & is.na(dd[,6])==F & dd[,"dtr"]<0,c("tmax","tmin")]<-NA
@@ -451,61 +434,54 @@ if (dim(o1data)[1] > 0){
   write.table(round(ofile,digit=2),file=nam1,append=F,quote=F,sep=",",row.names=F)
 }
 
-dd<-dd[,c("year","month","day","prcp","tmax","tmin")];  assign("dd",dd,envir=.GlobalEnv)
+dd<-dd[,c("year","month","day","prcp","tmax","tmin")];assign("dd",dd,envir=.GlobalEnv)
 
 namcal<-paste(nama,"indcal.csv",sep="")
 assign("namcal",namcal,envir=.GlobalEnv)
 write.table(dd,file=namcal,append=F,quote=F,sep=",",row.names=F,na="-99.9")
 
 tkmessageBox(message=paste("If you have checked data(", namcal,"), click OK to continue.",sep=""))
-}
-# ------------ qcontrol ends --------------------------------
+}# end of qcontrol()
 
-
-# ---------------------------------------------------------
-# NASTST
-#
 nastat<-function(){
    dd <- read.table(namcal,header=T,sep=",",na.strings="-99.9",colClasses=rep("real",6))
    assign("dd",dd,envir=.GlobalEnv)
 # NA statistics
-   nast<-rep(0,12)
-   nast<-array(nast,c(1,12,12,(yeare-years+1)))
-   dimnames(nast)<-list(NULL,c("ynapr","ynatma","ynatmi","napr","natma","natmi","mnapr>3","mnatma>3","mnatmi>3","ynapr>15","ynatma>15","ynatmi>15"),NULL,NULL)
-   ys<-yeare-years+1                    
-   year=years
-   aa1<-matrix(NA,12*ys,4)   # monthly
-   dimnames(aa1)<-list(NULL,c("year","month","tmaxm","tminm"))
-   aa1[,"year"]<-years:yeare
-   aa1[,"year"]<-mysort(aa1[,"year"],decreasing=F)    # Is this step necessary???
-   aa1[,"month"]<-1:12
-   aa2<-matrix(NA,ys,3)      # annual
-   dimnames(aa2)<-list(NULL,c("year","tmaxm","tminm"))
-   aa2[,"year"]<-years:yeare
-   for (i in 1:(yeare-years+1)){
-     month<-1;     midvalue1<-dd[dd$year==year,]   # data for each year
-     aa2[i,"tmaxm"]<-mean(midvalue1[,"tmax"],na.rm=T)  # annual mean of Tmax, Tmin
-     aa2[i,"tminm"]<-mean(midvalue1[,"tmin"],na.rm=T)
-     for (j in 1:12){
-        midvalue2<-midvalue1[midvalue1$month==month,]  # data for each month
-        aa1[(i-1)*12+j,"tmaxm"]<-mean(midvalue2[,"tmax"],na.rm=T)  # monthly mean of Tmax, Tmin
-        aa1[(i-1)*12+j,"tminm"]<-mean(midvalue2[,"tmin"],na.rm=T)
-        nast[1,"ynapr",j,i]<-dim(midvalue1[is.na(midvalue1$prcp),])[1]  # annual missing days
-        if (nast[1,"ynapr",j,i]>15) nast[1,"ynapr>15",j,i]<-NA
-        nast[1,"ynatma",j,i]<-dim(midvalue1[is.na(midvalue1$tmax),])[1]
-        if (nast[1,"ynatma",j,i]>15) nast[1,"ynatma>15",j,i]<-NA
-        nast[1,"ynatmi",j,i]<-dim(midvalue1[is.na(midvalue1$tmin),])[1]
-        if (nast[1,"ynatmi",j,i]>15) nast[1,"ynatmi>15",j,i]<-NA
-        nast[1,"napr",j,i]<-dim(midvalue2[is.na(midvalue2$prcp),])[1]  # monthly missing days
-        if (nast[1,"napr",j,i]>3) nast[1,"mnapr>3",j,i]<-NA
-        nast[1,"natma",j,i]<-dim(midvalue2[is.na(midvalue2$tmax),])[1]
-        if (nast[1,"natma",j,i]>3) nast[1,"mnatma>3",j,i]<-NA
-        nast[1,"natmi",j,i]<-dim(midvalue2[is.na(midvalue2$tmin),])[1]
-        if (nast[1,"natmi",j,i]>3) nast[1,"mnatmi>3",j,i]<-NA
-        month=month+1 
-      }
-      year=year+1      
-   }
+nast<-rep(0,12)
+nast<-array(nast,c(1,12,12,(yeare-years+1)))
+dimnames(nast)<-list(NULL,c("ynapr","ynatma","ynatmi","napr","natma","natmi","mnapr>3","mnatma>3","mnatmi>3","ynapr>15","ynatma>15","ynatmi>15"),NULL,NULL)
+ys<-yeare-years+1                    
+year=years
+aa1<-matrix(NA,12*ys,4)
+dimnames(aa1)<-list(NULL,c("year","month","tmaxm","tminm"))
+aa1[,"year"]<-years:yeare
+aa1[,"year"]<-mysort(aa1[,"year"],decreasing=F)
+aa1[,"month"]<-1:12
+aa2<-matrix(NA,ys,3)
+dimnames(aa2)<-list(NULL,c("year","tmaxm","tminm"))
+aa2[,"year"]<-years:yeare
+for (i in 1:(yeare-years+1)){
+  month<-1;midvalue1<-dd[dd$year==year,]
+  aa2[i,"tmaxm"]<-mean(midvalue1[,"tmax"],na.rm=T)
+  aa2[i,"tminm"]<-mean(midvalue1[,"tmin"],na.rm=T)
+  for (j in 1:12){
+    midvalue2<-midvalue1[midvalue1$month==month,]
+    aa1[(i-1)*12+j,"tmaxm"]<-mean(midvalue2[,"tmax"],na.rm=T)
+    aa1[(i-1)*12+j,"tminm"]<-mean(midvalue2[,"tmin"],na.rm=T)
+    nast[1,"ynapr",j,i]<-dim(midvalue1[is.na(midvalue1$prcp),])[1]
+    if (nast[1,"ynapr",j,i]>15) nast[1,"ynapr>15",j,i]<-NA
+    nast[1,"ynatma",j,i]<-dim(midvalue1[is.na(midvalue1$tmax),])[1]
+    if (nast[1,"ynatma",j,i]>15) nast[1,"ynatma>15",j,i]<-NA
+    nast[1,"ynatmi",j,i]<-dim(midvalue1[is.na(midvalue1$tmin),])[1]
+    if (nast[1,"ynatmi",j,i]>15) nast[1,"ynatmi>15",j,i]<-NA
+    nast[1,"napr",j,i]<-dim(midvalue2[is.na(midvalue2$prcp),])[1]
+    if (nast[1,"napr",j,i]>3) nast[1,"mnapr>3",j,i]<-NA
+    nast[1,"natma",j,i]<-dim(midvalue2[is.na(midvalue2$tmax),])[1]
+    if (nast[1,"natma",j,i]>3) nast[1,"mnatma>3",j,i]<-NA
+    nast[1,"natmi",j,i]<-dim(midvalue2[is.na(midvalue2$tmin),])[1]
+    if (nast[1,"natmi",j,i]>3) nast[1,"mnatmi>3",j,i]<-NA
+    month=month+1         }
+    year=year+1           }
     nasto<-t(nast[,,,1])
     for ( i in 2:(yeare-years+1)){
       nasto<-rbind(nasto,t(nast[,,,i])) }
@@ -516,7 +492,7 @@ nastat<-function(){
     nastout[,"year"]<-mysort(nastout[,"year"],decreasing=F)
     nastout[,"month"]<-1:12
     
-    nastout<-cbind(nastout,nasto);    assign("nastout",nastout,envir=.GlobalEnv)
+    nastout<-cbind(nastout,nasto);assign("nastout",nastout,envir=.GlobalEnv)
     nastatistic<-nastout[,1:8]
    
     nacor<-nastout[,-(3:8)]
@@ -525,10 +501,9 @@ nastat<-function(){
     ynacor[,"year"]<-years:yeare
     ynacor<-as.data.frame(ynacor)
     for (year in years:yeare){
-       ynacor[ynacor$year==year,"ynapr>15"]<-nacor[nacor$year==year & nacor$month==1,"ynapr>15"]
-       ynacor[ynacor$year==year,"ynatma>15"]<-nacor[nacor$year==year & nacor$month==1,"ynatma>15"]
-       ynacor[ynacor$year==year,"ynatmi>15"]<-nacor[nacor$year==year & nacor$month==1,"ynatmi>15"]
-    }
+    ynacor[ynacor$year==year,"ynapr>15"]<-nacor[nacor$year==year & nacor$month==1,"ynapr>15"]
+    ynacor[ynacor$year==year,"ynatma>15"]<-nacor[nacor$year==year & nacor$month==1,"ynatma>15"]
+    ynacor[ynacor$year==year,"ynatmi>15"]<-nacor[nacor$year==year & nacor$month==1,"ynatmi>15"]}
     nacor<-nacor[,1:5]
     assign("nacor",nacor,envir=.GlobalEnv)
     assign("ynacor",ynacor,envir=.GlobalEnv)
@@ -542,19 +517,19 @@ nastat<-function(){
     assign("txallna",txallna,envir=.GlobalEnv)
     assign("tnallna",tnallna,envir=.GlobalEnv)
     assign("nastatistic",nastatistic,envir=.GlobalEnv)
-    nam1<-paste(outlogdir,paste(ofilename,"_nastatistic.csv",sep=""),sep="/")           # Output the result
+    nam1<-paste(outlogdir,paste(ofilename,"_nastatistic.csv",sep=""),sep="/")
     cat(file=nam1,"TITLE,YEAR,JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC,ANN\n")
     for(year in years:yeare)
       for(i in 1:3) {
         if(i==1) tit<-"PRCP"
-	      if(i==2) tit<-"TMAX"
-	      if(i==3) tit<-"TMIN"
-	      line<-paste(tit,year,sep=",")
-	      for(mon in 1:12)
-	        line<-paste(line,nastatistic[nastatistic$year==year&nastatistic$month==mon,i+5],sep=",")
-	      line<-paste(line,nastatistic[nastatistic$year==year&nastatistic$month==1,i+2],sep=",")
-	      cat(file=nam1,line,fill=100,append=T)
-       }
+	if(i==2) tit<-"TMAX"
+	if(i==3) tit<-"TMIN"
+	line<-paste(tit,year,sep=",")
+	for(mon in 1:12)
+	line<-paste(line,nastatistic[nastatistic$year==year&nastatistic$month==mon,i+5],sep=",")
+	line<-paste(line,nastatistic[nastatistic$year==year&nastatistic$month==1,i+2],sep=",")
+	cat(file=nam1,line,fill=100,append=T)
+      }
 #   write.table(nastatistic,file=nam1,append=F,quote=F,sep=", ",row.names=F)
     aa1[,"tmaxm"]<-aa1[,"tmaxm"]+nacor[,"mnatma>3"]
     aa1[,"tminm"]<-aa1[,"tminm"]+nacor[,"mnatmi>3"]
@@ -572,27 +547,22 @@ nastat<-function(){
     ofile1<-paste(outinddir,paste(ofilename,"_TMINmean.csv",sep=""),sep="/")
     write.table(round(odata,2),file=ofile1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
     parameter()
- }
- # -------------- nastat ends ------------------------------------------
+ }#end of nastat()
 
 
-# -----------------------------------------------------------------
-#  getfile
-# first step is to open a data file, and read them into "dd".
-#
 getfile<-function() {
      name <- tclvalue(tkgetOpenFile(filetypes="{{TEXT Files} {.txt}} {{All files} *}"))
      if (name=="") return();
      dd <- read.table(name,header=F,col.names=c("year","month","day","prcp","tmax","tmin"),colClasses=rep("real",6))
      nama<-substr(name,start=1,stop=(nchar(name)-4))
      outdirtmp<-strsplit(name,"/")[[1]]
-     if(length(outdirtmp)<=2){  # for Windiws
+     if(length(outdirtmp)<=2){
        outinddir<-paste(strsplit(name,":")[[1]][1],"indices",sep=":/")
        outlogdir<-paste(strsplit(name,":")[[1]][1],"log",sep=":/")
        outjpgdir<-paste(strsplit(name,":")[[1]][1],"plots",sep=":/")
        outtrddir<-paste(strsplit(name,":")[[1]][1],"trend",sep=":/")
      }
-     else{                   # Unix/Linux
+     else{
        outdir<-outdirtmp[1]
        for(i in 2:(length(outdirtmp)-1))
          outdir<-paste(outdir,outdirtmp[i],sep="/")
@@ -602,7 +572,6 @@ getfile<-function() {
          outtrddir<-paste(outdir,"trend",sep="/")
      }
      ofilename<-substr(outdirtmp[length(outdirtmp)],start=1,stop=(nchar(outdirtmp[length(outdirtmp)])-4))
-# create output folders
      if(!file.exists(outinddir)) dir.create(outinddir)
      if(!file.exists(outlogdir)) dir.create(outlogdir)
      if(!file.exists(outjpgdir)) dir.create(outjpgdir)
@@ -626,28 +595,27 @@ getfile<-function() {
      dddl<-matrix(NA,366,6)
      dimnames(ddd)<-list(NULL,c("year","month","day","prcp","tmax","tmin"))
      dimnames(dddl)<-list(NULL,c("year","month","day","prcp","tmax","tmin"))
-     ddd[1:31,"month"]<-1;     ddd[1:31,"day"]<-c(1:31);    ddd[32:59,"month"]<-2;    ddd[32:59,"day"]<-c(1:28)
-     ddd[60:90,"month"]<-3;    ddd[60:90,"day"]<-c(1:31);   ddd[91:120,"month"]<-4;   ddd[91:120,"day"]<-c(1:30)
-     ddd[121:151,"month"]<-5;  ddd[121:151,"day"]<-c(1:31); ddd[152:181,"month"]<-6;  ddd[152:181,"day"]<-c(1:30)
-     ddd[182:212,"month"]<-7;  ddd[182:212,"day"]<-c(1:31); ddd[213:243,"month"]<-8;  ddd[213:243,"day"]<-c(1:31)
-     ddd[244:273,"month"]<-9;  ddd[244:273,"day"]<-c(1:30); ddd[274:304,"month"]<-10; ddd[274:304,"day"]<-c(1:31)
-     ddd[305:334,"month"]<-11; ddd[305:334,"day"]<-c(1:30); ddd[335:365,"month"]<-12; ddd[335:365,"day"]<-c(1:31)
+     ddd[1:31,"month"]<-1;ddd[1:31,"day"]<-c(1:31);ddd[32:59,"month"]<-2;ddd[32:59,"day"]<-c(1:28)
+     ddd[60:90,"month"]<-3;ddd[60:90,"day"]<-c(1:31);ddd[91:120,"month"]<-4;ddd[91:120,"day"]<-c(1:30)
+     ddd[121:151,"month"]<-5;ddd[121:151,"day"]<-c(1:31);ddd[152:181,"month"]<-6;ddd[152:181,"day"]<-c(1:30)
+     ddd[182:212,"month"]<-7;ddd[182:212,"day"]<-c(1:31);ddd[213:243,"month"]<-8;ddd[213:243,"day"]<-c(1:31)
+     ddd[244:273,"month"]<-9;ddd[244:273,"day"]<-c(1:30);ddd[274:304,"month"]<-10;ddd[274:304,"day"]<-c(1:31)
+     ddd[305:334,"month"]<-11;ddd[305:334,"day"]<-c(1:30);ddd[335:365,"month"]<-12;ddd[335:365,"day"]<-c(1:31)
 
-     dddl[1:31,"month"]<-1;     dddl[1:31,"day"]<-c(1:31);    dddl[32:60,"month"]<-2;    dddl[32:60,"day"]<-c(1:29)
-     dddl[61:91,"month"]<-3;    dddl[61:91,"day"]<-c(1:31);   dddl[92:121,"month"]<-4;   dddl[92:121,"day"]<-c(1:30)
-     dddl[122:152,"month"]<-5;  dddl[122:152,"day"]<-c(1:31); dddl[153:182,"month"]<-6;  dddl[153:182,"day"]<-c(1:30)
-     dddl[183:213,"month"]<-7;  dddl[183:213,"day"]<-c(1:31); dddl[214:244,"month"]<-8;  dddl[214:244,"day"]<-c(1:31)
-     dddl[245:274,"month"]<-9;  dddl[245:274,"day"]<-c(1:30); dddl[275:305,"month"]<-10; dddl[275:305,"day"]<-c(1:31)
-     dddl[306:335,"month"]<-11; dddl[306:335,"day"]<-c(1:30); dddl[336:366,"month"]<-12; dddl[336:366,"day"]<-c(1:31)
+     dddl[1:31,"month"]<-1;dddl[1:31,"day"]<-c(1:31);dddl[32:60,"month"]<-2;dddl[32:60,"day"]<-c(1:29)
+     dddl[61:91,"month"]<-3;dddl[61:91,"day"]<-c(1:31);dddl[92:121,"month"]<-4;dddl[92:121,"day"]<-c(1:30)
+     dddl[122:152,"month"]<-5;dddl[122:152,"day"]<-c(1:31);dddl[153:182,"month"]<-6;dddl[153:182,"day"]<-c(1:30)
+     dddl[183:213,"month"]<-7;dddl[183:213,"day"]<-c(1:31);dddl[214:244,"month"]<-8;dddl[214:244,"day"]<-c(1:31)
+     dddl[245:274,"month"]<-9;dddl[245:274,"day"]<-c(1:30);dddl[275:305,"month"]<-10;dddl[275:305,"day"]<-c(1:31)
+     dddl[306:335,"month"]<-11;dddl[306:335,"day"]<-c(1:30);dddl[336:366,"month"]<-12;dddl[336:366,"day"]<-c(1:31)
 
-     years<-dd[1,1];yeare<-dd[dim(dd)[1],1]   # star and end years
+     years<-dd[1,1];yeare<-dd[dim(dd)[1],1]
      if (leapyear(years)) dddd<-dddl else dddd<-ddd
      dddd[,"year"]<-years
      for (year in years:yeare){                  # year loop start
-        if (leapyear(year)) dddd1<-dddl else dddd1<-ddd
-        dddd1[,"year"]<-year
-        if (year!=years) dddd<-rbind(dddd,dddd1)
-         }                                       # year loop end
+     if (leapyear(year)) dddd1<-dddl else dddd1<-ddd
+     dddd1[,"year"]<-year
+     if (year!=years) dddd<-rbind(dddd,dddd1) }# year loop end
 
      dddd<-as.data.frame(dddd)
      dddd2<-merge(dddd,dd,by=c("year","month","day"),all.x=T)
@@ -668,7 +636,7 @@ getfile<-function() {
      tkgrab.set(infor1)
      tkwm.title(infor1,"Set Parameters for Data QC")
 
-     textEntry1<-stations;        textEntry2<-stdt
+     textEntry1<-stations;textEntry2<-stdt
          
      textEntryWidget1<-tkentry(infor1,width=30,textvariable=textEntry1)
      textEntryWidget2<-tkentry(infor1,width=30,textvariable=textEntry2)
@@ -677,32 +645,25 @@ getfile<-function() {
      tkgrid(tklabel(infor1,text="                  Station name or code:"),textEntryWidget1)
      tkgrid(tklabel(infor1,text="Criteria(number of Standard Deviation):"),textEntryWidget2)
           
-  ok1<-function(){
-       station<-as.character(tclvalue(textEntry1));    assign("station",station,envir=.GlobalEnv)
-       crt<-as.numeric(tclvalue(textEntry2));          assign("crt",crt,envir=.GlobalEnv)
+     ok1<-function(){
+       station<-as.character(tclvalue(textEntry1));assign("station",station,envir=.GlobalEnv)
+       crt<-as.numeric(tclvalue(textEntry2));assign("crt",crt,envir=.GlobalEnv)
        tkgrab.release(infor1)
        tkdestroy(infor1)
-       stations<-textEntry1;      assign("stations",stations,envir=.GlobalEnv)
-       stdt<-textEntry2;          assign("stdt",stdt,envir=.GlobalEnv)
-       qcontrol();                tkfocus(start1)
+       stations<-textEntry1;assign("stations",stations,envir=.GlobalEnv)
+       stdt<-textEntry2;assign("stdt",stdt,envir=.GlobalEnv)
+       qcontrol();tkfocus(start1)
        }# end of ok
 
-  cancel1<-function(){
+     cancel1<-function(){
      tkmessageBox(message="You have to enter these parameters before you can move on.")
      tkfocus(infor1)}# end of cancel1
      
      ok1.but<-    tkbutton(infor1,text="    OK    ",command=ok1)
      cancel1.but<-tkbutton(infor1,text="  CANCEL  ",command=cancel1)
      tkgrid(ok1.but,cancel1.but)
+        }# end of getfile
 
-}
-# end of getfile
-#------------------------------------------------------------
-
-
-# -----------------------------------------------------------
-# parameter
-#
 parameter<-function(){
      infor<-tktoplevel()
      tkfocus(infor)
@@ -743,11 +704,10 @@ parameter<-function(){
      tkgrid(tklabel(infor,text="User defined lower threshold of daily minimum temperature"),textEntryWidget9)
      tkgrid(tklabel(infor,text="User defined daily precipitation threshold"),textEntryWidget12)
      
-#----------- OK1 -----------------------------------------    
      ok1<-function(){
 #       tkmessageBox(message="This process may take 2 mins to initialize the data. Please wait until the window disapear!")
-       startyear<-as.numeric(tclvalue(textEntry1));  assign("startyear",startyear,envir=.GlobalEnv)
-       endyear<-as.numeric(tclvalue(textEntry2));    assign("endyear",endyear,envir=.GlobalEnv)
+       startyear<-as.numeric(tclvalue(textEntry1));assign("startyear",startyear,envir=.GlobalEnv)
+       endyear<-as.numeric(tclvalue(textEntry2));assign("endyear",endyear,envir=.GlobalEnv)
        if(startyear<years|endyear>yeare){
          if(startyear<years) msg<-paste("Input base period start:", startyear," less then start year of data:", years, sep=" ")
          else msg<-paste("Input base period end:", endyear," greater then end year of data:", yeare, sep=" ")
@@ -755,39 +715,37 @@ parameter<-function(){
          tkfocus(infor)
          return()
        }
-#       winsize<-as.numeric(tclvalue(textEntry3));   assign("winsize",winsize,envir=.GlobalEnv)
-       latitude<-as.numeric(tclvalue(textEntry4));   assign("latitude",latitude,envir=.GlobalEnv)
-       longitude<-as.numeric(tclvalue(textEntry5));  assign("longitude",longitude,envir=.GlobalEnv)
-#       threshold<-as.numeric(tclvalue(textEntry5)); assign("threshold",threshold,envir=.GlobalEnv)
-       uuu<-as.numeric(tclvalue(textEntry6));        assign("uuu",uuu,envir=.GlobalEnv)
-       ulu<-as.numeric(tclvalue(textEntry7));        assign("uul",ulu,envir=.GlobalEnv)
-       uul<-as.numeric(tclvalue(textEntry8));        assign("ulu",uul,envir=.GlobalEnv)
-       ull<-as.numeric(tclvalue(textEntry9));        assign("ull",ull,envir=.GlobalEnv)
-#       up<-as.numeric(tclvalue(textEntry10));       assign("up",up,envir=.GlobalEnv)
-#       lp<-as.numeric(tclvalue(textEntry11));       assign("lp",lp,envir=.GlobalEnv)
-       nn<-as.numeric(tclvalue(textEntry12));        assign("nn",nn,envir=.GlobalEnv)
-       startpoint<-startyear-1;   assign("startpoint",startpoint,envir=.GlobalEnv)
-       endpoint<-endyear+1;       assign("endpoint",endpoint,envir=.GlobalEnv)
+#       winsize<-as.numeric(tclvalue(textEntry3));assign("winsize",winsize,envir=.GlobalEnv)
+       latitude<-as.numeric(tclvalue(textEntry4));assign("latitude",latitude,envir=.GlobalEnv)
+       longitude<-as.numeric(tclvalue(textEntry5));assign("longitude",longitude,envir=.GlobalEnv)
+#       threshold<-as.numeric(tclvalue(textEntry5));assign("threshold",threshold,envir=.GlobalEnv)
+       uuu<-as.numeric(tclvalue(textEntry6));assign("uuu",uuu,envir=.GlobalEnv)
+       ulu<-as.numeric(tclvalue(textEntry7));assign("uul",ulu,envir=.GlobalEnv)
+       uul<-as.numeric(tclvalue(textEntry8));assign("ulu",uul,envir=.GlobalEnv)
+       ull<-as.numeric(tclvalue(textEntry9));assign("ull",ull,envir=.GlobalEnv)
+#       up<-as.numeric(tclvalue(textEntry10));assign("up",up,envir=.GlobalEnv)
+#       lp<-as.numeric(tclvalue(textEntry11));assign("lp",lp,envir=.GlobalEnv)
+       nn<-as.numeric(tclvalue(textEntry12));assign("nn",nn,envir=.GlobalEnv)
+       startpoint<-startyear-1;assign("startpoint",startpoint,envir=.GlobalEnv)
+       endpoint<-endyear+1;assign("endpoint",endpoint,envir=.GlobalEnv)
        nordaytem1()
        tkgrab.release(infor)
        tkdestroy(infor)
-       Entry1<-textEntry1;   assign("Entry1",Entry1,envir=.GlobalEnv)
-       Entry2<-textEntry2;   assign("Entry2",Entry2,envir=.GlobalEnv)
-#       Entry3<-textEntry3;  assign("Entry3",Entry3,envir=.GlobalEnv)
-       Entry4<-textEntry4;   assign("Entry4",Entry4,envir=.GlobalEnv)
-       Entry5<-textEntry5;   assign("Entry5",Entry5,envir=.GlobalEnv)
-       Entry6<-textEntry6;   assign("Entry6",Entry6,envir=.GlobalEnv)
-       Entry7<-textEntry7;   assign("Entry7",Entry7,envir=.GlobalEnv)
-       Entry8<-textEntry8;   assign("Entry8",Entry8,envir=.GlobalEnv)
-       Entry9<-textEntry9;   assign("Entry9",Entry9,envir=.GlobalEnv)
-#       Entry10<-textEntry10; assign("Entry10",Entry10,envir=.GlobalEnv)
-#       Entry11<-textEntry11; assign("Entry11",Entry11,envir=.GlobalEnv)
-       Entry12<-textEntry12;  assign("Entry12",Entry12,envir=.GlobalEnv)
+       Entry1<-textEntry1;assign("Entry1",Entry1,envir=.GlobalEnv)
+       Entry2<-textEntry2;assign("Entry2",Entry2,envir=.GlobalEnv)
+#       Entry3<-textEntry3;assign("Entry3",Entry3,envir=.GlobalEnv)
+       Entry4<-textEntry4;assign("Entry4",Entry4,envir=.GlobalEnv)
+       Entry5<-textEntry5;assign("Entry5",Entry5,envir=.GlobalEnv)
+       Entry6<-textEntry6;assign("Entry6",Entry6,envir=.GlobalEnv)
+       Entry7<-textEntry7;assign("Entry7",Entry7,envir=.GlobalEnv)
+       Entry8<-textEntry8;assign("Entry8",Entry8,envir=.GlobalEnv)
+       Entry9<-textEntry9;assign("Entry9",Entry9,envir=.GlobalEnv)
+#       Entry10<-textEntry10;assign("Entry10",Entry10,envir=.GlobalEnv)
+#       Entry11<-textEntry11;assign("Entry11",Entry11,envir=.GlobalEnv)
+       Entry12<-textEntry12;assign("Entry12",Entry12,envir=.GlobalEnv)
        main1()
      }
-#----------- OK1 ends -----------------------------------------  
 
-#----------- cancel1 -----------------------------------------  
      cancel1<-function(){
 #       tkmessageBox(message="Please enter these parameters before you can move forward!!")
 #       tkfocus(infor)
@@ -796,22 +754,15 @@ parameter<-function(){
 #       tkfocus(start1)
        return()
      }
-#----------- cancel1 ends -----------------------------------------  
      
      ok1.but<-    tkbutton(infor,text="    OK    ",command=ok1)
      cancel1.but<-tkbutton(infor,text="  CANCEL  ",command=cancel1)
-     tkgrid(ok1.but,cancel1.but)
-}
-#----------- parameter ends -----------------------------------------  
-
+     tkgrid(ok1.but,cancel1.but)}
 
 # End of Part I (general functions & TCL/TK functions
 
 # Part II
 # Functions of calculating climate indecies
-
-#----------- hwfi -----------------------------------------  
-
 hwfi<-function(){
   if (flag==T) return()
   hwfi<-matrix(0,(yeare-years+1),2)
@@ -862,14 +813,16 @@ hwfi<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"wsdi",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-  nam2<-paste(outjpgdir,paste(ofilename,"_WSDI.jpg",sep=""),sep="/")
-  jpeg(nam2,width=1024,height=768)
+  nam2<-paste(outjpgdir,paste(ofilename,"_WSDI.png",sep=""),sep="/")
+  png(nam2,width=1024,height=768,bg="white")
   plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Year")
   dev.off()
-} 
-# ------------ hwfi ends ------------------------------------
+  nam3<-paste(outjpgdir,paste(ofilename,"_WSDI.pdf",sep=""),sep="/")
+  pdf(nam3)
+  plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Year")
+  dev.off()
+} # end of hwfi function
 
-# ------------- cwdi ----------------------------------------
 cwdi<-function(){
   if (flag==T) return()
   cwdi<-matrix(0,(yeare-years+1),2)
@@ -920,14 +873,16 @@ cwdi<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"csdi",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-  nam2<-paste(outjpgdir,paste(ofilename,"_CSDI.jpg",sep=""),sep="/")
-  jpeg(nam2,width=1024,height=768)
+  nam2<-paste(outjpgdir,paste(ofilename,"_CSDI.png",sep=""),sep="/")
+  png(nam2,width=1024,height=768,bg="white")
   plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Year")
   dev.off()
-} 
-# ----------------- cwdi ends -------------------------------------------
+  nam2a<-paste(outjpgdir,paste(ofilename,"_CSDI.pdf",sep=""),sep="/")
+  pdf(nam2a)
+  plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Year")
+  dev.off()
+} # end of cwdi function
 
-#----------- r95ptot -----------------------------------------
 r95ptot<-function(){
   prcptmp<-dd[dd$year>=startyear&dd$year<=endyear&dd$prcp>=1,"prcp"]
   prcptmp<-prcptmp[is.na(prcptmp)==F]
@@ -973,22 +928,32 @@ r95ptot<-function(){
   cat(file=namt,paste(latitude,longitude,i,years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 }
 
-  nam4<-paste(outjpgdir,paste(ofilename,"_R95p.jpg",sep=""),sep="/")
-  jpeg(nam4,width=1024,height=768)
+  nam4<-paste(outjpgdir,paste(ofilename,"_R95p.png",sep=""),sep="/")
+  png(nam4,width=1024,height=768,bg="white")
   plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Year",ylab="R95p")
   dev.off()
-  nam5<-paste(outjpgdir,paste(ofilename,"_R99p.jpg",sep=""),sep="/")
-  jpeg(nam5,width=1024,height=768)
+  nam4a<-paste(outjpgdir,paste(ofilename,"_R95p.pdf",sep=""),sep="/")
+  pdf(nam4a)
+  plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Year",ylab="R95p")
+  dev.off()
+  nam5<-paste(outjpgdir,paste(ofilename,"_R99p.png",sep=""),sep="/")
+  png(nam5,width=1024,height=768,bg="white")
   plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Year",ylab="R99p")
   dev.off()
-  nam6<-paste(outjpgdir,paste(ofilename,"_PRCPTOT.jpg",sep=""),sep="/")
-  jpeg(nam6,width=1024,height=768)
+  nam5a<-paste(outjpgdir,paste(ofilename,"_R99p.pdf",sep=""),sep="/")
+  pdf(nam5a)
+  plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Year",ylab="R99p")
+  dev.off()
+  nam6<-paste(outjpgdir,paste(ofilename,"_PRCPTOT.png",sep=""),sep="/")
+  png(nam6,width=1024,height=768,bg="white")
   plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Year",ylab="PRCPTOT")
   dev.off()
-}
-#----------- r95ptot ends -----------------------------------------
+  nam6a<-paste(outjpgdir,paste(ofilename,"_PRCPTOT.pdf",sep=""),sep="/")
+  pdf(nam6a)
+  plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Year",ylab="PRCPTOT")
+  dev.off()
+} # end of function r95ptot
 
-#----------- daysprcp20 -----------------------------------------
 daysprcp20<-function(){
   ys<-yeare-years+1
 R20<-rep(0,ys)
@@ -1018,14 +983,16 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
     }
   cat(file=namt,paste(latitude,longitude,"r20mm",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-nam2<-paste(outjpgdir,paste(ofilename,"_R20mm.jpg",sep=""),sep="/")
-jpeg(nam2,width=1024,height=768)
+nam2<-paste(outjpgdir,paste(ofilename,"_R20mm.png",sep=""),sep="/")
+png(nam2,width=1024,height=768,bg="white")
+plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Year",ylab="R20mm")
+dev.off()
+nam2a<-paste(outjpgdir,paste(ofilename,"_R20mm.pdf",sep=""),sep="/")
+pdf(nam2a)
 plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Year",ylab="R20mm")
 dev.off()
 }
-#----------- daysprcp20 ends -----------------------------------------
 
-#----------- daysprcpn -----------------------------------------
 daysprcpn<-function(){
    ys<-yeare-years+1
 Rnn<-rep(0,ys)
@@ -1057,14 +1024,16 @@ for (year in years:yeare){
     }
   cat(file=namt,paste(latitude,longitude,paste("R",as.character(nn),"mm",sep=""),years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-   nam2<-paste(outjpgdir,paste(ofilename,"_R",as.character(nn),"mm.jpg",sep=""),sep="/")
-   jpeg(nam2,width=1024,height=768)
+   nam2<-paste(outjpgdir,paste(ofilename,"_R",as.character(nn),"mm.png",sep=""),sep="/")
+   png(nam2,width=1024,height=768,bg="white")
    plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Year",ylab="Rnnmm")
    dev.off()
+  nam2a<-paste(outjpgdir,paste(ofilename,"_R",as.character(nn),"mm.pdf",sep=""),sep="/")
+  pdf(nam2a)
+  plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Year",ylab="Rnnmm")
+  dev.off()
  }
- #----------- daysprcpn ends -----------------------------------------
 
-#----------- nordaytem1 -----------------------------------------
 nordaytem1<-function(){  # initialize data
 # normal temp
 
@@ -1092,7 +1061,7 @@ assign("ddtem",ddtem,envir=.GlobalEnv)
 
 a<-matrix(-99,5,5)
 dimnames(a)[[2]]<-c("year","month","day","tmax","tmin")
-ddtemt<-rbind(a,ddtem);    assign("ddtemt",ddtemt,envir=.GlobalEnv)
+ddtemt<-rbind(a,ddtem);assign("ddtemt",ddtemt,envir=.GlobalEnv)
 
 ys<-endyear-startyear+1
 window<-matrix(0,winsize,2)
@@ -1106,16 +1075,16 @@ daynormm<-as.matrix(daynormm)
 year<-startyear
 
 for (k in 1:ys){
-   if (leapyear(year)==T) jj<-366 else {jj<-365;   windows[,,366,k]<--99 }
+   if (leapyear(year)==T) jj<-366 else {jj<-365; windows[,,366,k]<--99 }
    year<-year+1
 for (j in 1:jj){
     windows[,,j,k]<-daynormm[(i-i1):(i+i1),]
     i=i+1 }}
 
 mwindows<-colMeans(windows,na.rm=T)
-tmax<-mwindows["tmax",,];    tmax<-tmax[tmax!=-99]
-tmin<-mwindows["tmin",,];    tmin<-tmin[tmin!=-99]
-daynor[,"tmax"]<-tmax;       daynor[,"tmin"]<-tmin
+tmax<-mwindows["tmax",,];tmax<-tmax[tmax!=-99]
+tmin<-mwindows["tmin",,];tmin<-tmin[tmin!=-99]
+daynor[,"tmax"]<-tmax;daynor[,"tmin"]<-tmin
 
 a<-rep(0,nrow(daynor))
 a<-(daynor[,"tmax"]+daynor[,"tmin"])/2
@@ -1260,14 +1229,14 @@ amonex[,"year"]<-mysort(amonex[,"year"],decreasing=F)
 amonex<-as.data.frame(amonex)
 
 # dataframe store yearly exceedance rate (before and after)
-yearex<-c(years:(startyear-1));   txg10p<-rep(0,length(yearex))
-txg90p<-rep(0,length(yearex));    tng10p<-rep(0,length(yearex))
+yearex<-c(years:(startyear-1));txg10p<-rep(0,length(yearex))
+txg90p<-rep(0,length(yearex));tng10p<-rep(0,length(yearex))
 tng90p<-rep(0,length(yearex))
 bd<-as.data.frame(cbind(yearex,txg10p,txg90p,tng10p,tng90p))
 colnames(bd)[1]<-"year"
 
-yearex<-c((endyear+1):yeare);     txg10p<-rep(0,length(yearex))
-txg90p<-rep(0,length(yearex));    tng10p<-rep(0,length(yearex))
+yearex<-c((endyear+1):yeare);txg10p<-rep(0,length(yearex))
+txg90p<-rep(0,length(yearex));tng10p<-rep(0,length(yearex))
 tng90p<-rep(0,length(yearex))
 ad<-as.data.frame(cbind(yearex,txg10p,txg90p,tng10p,tng90p))
 colnames(ad)[1]<-"year"
@@ -1276,28 +1245,28 @@ year=years;jjj6=1
 for (i in 1:ys1){
    midvalue<-ddtem[ddtem$year==year,]
    exmax10<-midvalue[,4]-aas[,2]
-   exmax10m1<-exmax10[1:31];      exmax10m2<-exmax10[32:59];    exmax10m3<-exmax10[60:90]
-   exmax10m4<-exmax10[91:120];    exmax10m5<-exmax10[121:151];  exmax10m6<-exmax10[152:181]
-   exmax10m7<-exmax10[182:212];   exmax10m8<-exmax10[213:243];  exmax10m9<-exmax10[244:273]
-   exmax10m10<-exmax10[274:304];  exmax10m11<-exmax10[305:334]; exmax10m12<-exmax10[335:365]
+   exmax10m1<-exmax10[1:31];exmax10m2<-exmax10[32:59];exmax10m3<-exmax10[60:90]
+   exmax10m4<-exmax10[91:120];exmax10m5<-exmax10[121:151];exmax10m6<-exmax10[152:181]
+   exmax10m7<-exmax10[182:212];exmax10m8<-exmax10[213:243];exmax10m9<-exmax10[244:273]
+   exmax10m10<-exmax10[274:304];exmax10m11<-exmax10[305:334];exmax10m12<-exmax10[335:365]
    
    exmax90<-midvalue[,4]-aas[,3]
-   exmax90m1<-exmax90[1:31];      exmax90m2<-exmax90[32:59];    exmax90m3<-exmax90[60:90]
-   exmax90m4<-exmax90[91:120];    exmax90m5<-exmax90[121:151];  exmax90m6<-exmax90[152:181]
-   exmax90m7<-exmax90[182:212];   exmax90m8<-exmax90[213:243];  exmax90m9<-exmax90[244:273]
-   exmax90m10<-exmax90[274:304];  exmax90m11<-exmax90[305:334]; exmax90m12<-exmax90[335:365]
+   exmax90m1<-exmax90[1:31];exmax90m2<-exmax90[32:59];exmax90m3<-exmax90[60:90]
+   exmax90m4<-exmax90[91:120];exmax90m5<-exmax90[121:151];exmax90m6<-exmax90[152:181]
+   exmax90m7<-exmax90[182:212];exmax90m8<-exmax90[213:243];exmax90m9<-exmax90[244:273]
+   exmax90m10<-exmax90[274:304];exmax90m11<-exmax90[305:334];exmax90m12<-exmax90[335:365]
 
    exmin10<-midvalue[,5]-aas[,4]
-   exmin10m1<-exmin10[1:31];      exmin10m2<-exmin10[32:59];    exmin10m3<-exmin10[60:90]
-   exmin10m4<-exmin10[91:120];    exmin10m5<-exmin10[121:151];  exmin10m6<-exmin10[152:181]
-   exmin10m7<-exmin10[182:212];   exmin10m8<-exmin10[213:243];  exmin10m9<-exmin10[244:273]
-   exmin10m10<-exmin10[274:304];  exmin10m11<-exmin10[305:334]; exmin10m12<-exmin10[335:365]
+   exmin10m1<-exmin10[1:31];exmin10m2<-exmin10[32:59];exmin10m3<-exmin10[60:90]
+   exmin10m4<-exmin10[91:120];exmin10m5<-exmin10[121:151];exmin10m6<-exmin10[152:181]
+   exmin10m7<-exmin10[182:212];exmin10m8<-exmin10[213:243];exmin10m9<-exmin10[244:273]
+   exmin10m10<-exmin10[274:304];exmin10m11<-exmin10[305:334];exmin10m12<-exmin10[335:365]
 
    exmin90<-midvalue[,5]-aas[,5]
-   exmin90m1<-exmin90[1:31];      exmin90m2<-exmin90[32:59];    exmin90m3<-exmin90[60:90]
-   exmin90m4<-exmin90[91:120];    exmin90m5<-exmin90[121:151];  exmin90m6<-exmin90[152:181]
-   exmin90m7<-exmin90[182:212];   exmin90m8<-exmin90[213:243];  exmin90m9<-exmin90[244:273]
-   exmin90m10<-exmin90[274:304];  exmin90m11<-exmin90[305:334]; exmin90m12<-exmin90[335:365]
+   exmin90m1<-exmin90[1:31];exmin90m2<-exmin90[32:59];exmin90m3<-exmin90[60:90]
+   exmin90m4<-exmin90[91:120];exmin90m5<-exmin90[121:151];exmin90m6<-exmin90[152:181]
+   exmin90m7<-exmin90[182:212];exmin90m8<-exmin90[213:243];exmin90m9<-exmin90[244:273]
+   exmin90m10<-exmin90[274:304];exmin90m11<-exmin90[305:334];exmin90m12<-exmin90[335:365]
 
    bd[i,"txg10p"]<-length(exmax10[exmax10<0&is.na(exmax10)==F])
    bd[i,"txg90p"]<-length(exmax90[exmax90>0&is.na(exmax90)==F])
@@ -1383,28 +1352,28 @@ year=endyear+1;jjj6=1
 for (i in 1:ys2){
    midvalue<-ddtem[ddtem$year==year,]
    exmax10<-midvalue[,4]-aas[,2]
-   exmax10m1<-exmax10[1:31];     exmax10m2<-exmax10[32:59];    exmax10m3<-exmax10[60:90]
-   exmax10m4<-exmax10[91:120];   exmax10m5<-exmax10[121:151];  exmax10m6<-exmax10[152:181]
-   exmax10m7<-exmax10[182:212];  exmax10m8<-exmax10[213:243];  exmax10m9<-exmax10[244:273]
-   exmax10m10<-exmax10[274:304]; exmax10m11<-exmax10[305:334]; exmax10m12<-exmax10[335:365]
+   exmax10m1<-exmax10[1:31];exmax10m2<-exmax10[32:59];exmax10m3<-exmax10[60:90]
+   exmax10m4<-exmax10[91:120];exmax10m5<-exmax10[121:151];exmax10m6<-exmax10[152:181]
+   exmax10m7<-exmax10[182:212];exmax10m8<-exmax10[213:243];exmax10m9<-exmax10[244:273]
+   exmax10m10<-exmax10[274:304];exmax10m11<-exmax10[305:334];exmax10m12<-exmax10[335:365]
    
    exmax90<-midvalue[,4]-aas[,3]
-   exmax90m1<-exmax90[1:31];     exmax90m2<-exmax90[32:59];    exmax90m3<-exmax90[60:90]
-   exmax90m4<-exmax90[91:120];   exmax90m5<-exmax90[121:151];  exmax90m6<-exmax90[152:181]
-   exmax90m7<-exmax90[182:212];  exmax90m8<-exmax90[213:243];  exmax90m9<-exmax90[244:273]
-   exmax90m10<-exmax90[274:304]; exmax90m11<-exmax90[305:334]; exmax90m12<-exmax90[335:365]
+   exmax90m1<-exmax90[1:31];exmax90m2<-exmax90[32:59];exmax90m3<-exmax90[60:90]
+   exmax90m4<-exmax90[91:120];exmax90m5<-exmax90[121:151];exmax90m6<-exmax90[152:181]
+   exmax90m7<-exmax90[182:212];exmax90m8<-exmax90[213:243];exmax90m9<-exmax90[244:273]
+   exmax90m10<-exmax90[274:304];exmax90m11<-exmax90[305:334];exmax90m12<-exmax90[335:365]
 
    exmin10<-midvalue[,5]-aas[,4]
-   exmin10m1<-exmin10[1:31];     exmin10m2<-exmin10[32:59];    exmin10m3<-exmin10[60:90]
-   exmin10m4<-exmin10[91:120];   exmin10m5<-exmin10[121:151];  exmin10m6<-exmin10[152:181]
-   exmin10m7<-exmin10[182:212];  exmin10m8<-exmin10[213:243];  exmin10m9<-exmin10[244:273]
-   exmin10m10<-exmin10[274:304]; exmin10m11<-exmin10[305:334]; exmin10m12<-exmin10[335:365]
+   exmin10m1<-exmin10[1:31];exmin10m2<-exmin10[32:59];exmin10m3<-exmin10[60:90]
+   exmin10m4<-exmin10[91:120];exmin10m5<-exmin10[121:151];exmin10m6<-exmin10[152:181]
+   exmin10m7<-exmin10[182:212];exmin10m8<-exmin10[213:243];exmin10m9<-exmin10[244:273]
+   exmin10m10<-exmin10[274:304];exmin10m11<-exmin10[305:334];exmin10m12<-exmin10[335:365]
 
    exmin90<-midvalue[,5]-aas[,5]
-   exmin90m1<-exmin90[1:31];     exmin90m2<-exmin90[32:59];    exmin90m3<-exmin90[60:90]
-   exmin90m4<-exmin90[91:120];   exmin90m5<-exmin90[121:151];  exmin90m6<-exmin90[152:181]
-   exmin90m7<-exmin90[182:212];  exmin90m8<-exmin90[213:243];  exmin90m9<-exmin90[244:273]
-   exmin90m10<-exmin90[274:304]; exmin90m11<-exmin90[305:334]; exmin90m12<-exmin90[335:365]
+   exmin90m1<-exmin90[1:31];exmin90m2<-exmin90[32:59];exmin90m3<-exmin90[60:90]
+   exmin90m4<-exmin90[91:120];exmin90m5<-exmin90[121:151];exmin90m6<-exmin90[152:181]
+   exmin90m7<-exmin90[182:212];exmin90m8<-exmin90[213:243];exmin90m9<-exmin90[244:273]
+   exmin90m10<-exmin90[274:304];exmin90m11<-exmin90[305:334];exmin90m12<-exmin90[335:365]
    
    ad[i,"txg10p"]<-length(exmax10[exmax10<0&is.na(exmax10)==F])
    ad[i,"txg90p"]<-length(exmax90[exmax90>0&is.na(exmax90)==F])
@@ -1484,20 +1453,16 @@ for (i in 1:ys2){
 
    jjj6<-jjj6+12
    year=year+1   }
-bdm<-merge(bmonex,bd,by="year");  assign("bdm",bdm,envir=.GlobalEnv)
-adm<-merge(amonex,ad,by="year");  assign("adm",adm,envir=.GlobalEnv)
+bdm<-merge(bmonex,bd,by="year");assign("bdm",bdm,envir=.GlobalEnv)
+adm<-merge(amonex,ad,by="year");assign("adm",adm,envir=.GlobalEnv)
 
 } # end of nordaytem1 function
-#----------- nordaytem1 ends -----------------------------------------
 
-#----------- nordaytem -----------------------------------------
 nordaytem<-function(){
 nam1<-paste(nama,"_DAYNOR.csv",sep="")
 write.table(daynor,file=nam1,append=F,quote=F,sep=", ",row.names=F)
 }
-#----------- nordaytem ends -----------------------------------------
 
-#----------- dtr -----------------------------------------
 dtr<-function(){# day temperature range(monthly average) 
   len<-yeare-years+1
   aa1<-matrix(NA,12*len,3)
@@ -1522,12 +1487,12 @@ dtr<-function(){# day temperature range(monthly average)
     temrangem10<-temrange1[temrange1$month==10,"temrange"]
     temrangem11<-temrange1[temrange1$month==11,"temrange"]
     temrangem12<-temrange1[temrange1$month==12,"temrange"]
-    aa1[jjj1,3]<-mean(temrangem1,na.rm=T);     aa1[jjj1+1,3]<-mean(temrangem2,na.rm=T)
-    aa1[jjj1+2,3]<-mean(temrangem3,na.rm=T);   aa1[jjj1+3,3]<-mean(temrangem4,na.rm=T)
-    aa1[jjj1+4,3]<-mean(temrangem5,na.rm=T);   aa1[jjj1+5,3]<-mean(temrangem6,na.rm=T)
-    aa1[jjj1+6,3]<-mean(temrangem7,na.rm=T);   aa1[jjj1+7,3]<-mean(temrangem8,na.rm=T)
-    aa1[jjj1+8,3]<-mean(temrangem9,na.rm=T);   aa1[jjj1+9,3]<-mean(temrangem10,na.rm=T)
-    aa1[jjj1+10,3]<-mean(temrangem11,na.rm=T); aa1[jjj1+11,3]<-mean(temrangem12,na.rm=T)
+    aa1[jjj1,3]<-mean(temrangem1,na.rm=T);aa1[jjj1+1,3]<-mean(temrangem2,na.rm=T)
+    aa1[jjj1+2,3]<-mean(temrangem3,na.rm=T);aa1[jjj1+3,3]<-mean(temrangem4,na.rm=T)
+    aa1[jjj1+4,3]<-mean(temrangem5,na.rm=T);aa1[jjj1+5,3]<-mean(temrangem6,na.rm=T)
+    aa1[jjj1+6,3]<-mean(temrangem7,na.rm=T);aa1[jjj1+7,3]<-mean(temrangem8,na.rm=T)
+    aa1[jjj1+8,3]<-mean(temrangem9,na.rm=T);aa1[jjj1+9,3]<-mean(temrangem10,na.rm=T)
+    aa1[jjj1+10,3]<-mean(temrangem11,na.rm=T);aa1[jjj1+11,3]<-mean(temrangem12,na.rm=T)
     jjj1<-jjj1+12}               #end of year loop
 
     aa1[,"dtr"]<-aa1[,"dtr"]+nacor[,"mnatma>3"]+nacor[,"mnatmi>3"]
@@ -1559,14 +1524,16 @@ dtr<-function(){# day temperature range(monthly average)
     }
   cat(file=namt,paste(latitude,longitude,"dtr",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-    nam2<-paste(outjpgdir,paste(ofilename,"_DTR.jpg",sep=""),sep="/")
-    jpeg(nam2,width=1024,height=768)
+    nam2<-paste(outjpgdir,paste(ofilename,"_DTR.png",sep=""),sep="/")
+    png(nam2,width=1024,height=768,bg="white")
+    plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Year",ylab="DTR")
+    dev.off()
+    nam2a<-paste(outjpgdir,paste(ofilename,"_DTR.pdf",sep=""),sep="/")
+    pdf(nam2a)
     plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Year",ylab="DTR")
     dev.off()
    } # end of dtr
-#----------- dtr ends -----------------------------------------
 
-#----------- daysprcp10 -----------------------------------------  
 daysprcp10<-function(){
  ys<-yeare-years+1
 R10<-rep(0,ys)
@@ -1596,14 +1563,16 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
     }
   cat(file=namt,paste(latitude,longitude,"r10mm",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-nam2<-paste(outjpgdir,paste(ofilename,"_R10mm.jpg",sep=""),sep="/")
-jpeg(nam2,width=1024,height=768)
+nam2<-paste(outjpgdir,paste(ofilename,"_R10mm.png",sep=""),sep="/")
+png(nam2,width=1024,height=768)
+plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Year",ylab="R10mm")
+dev.off()
+nam2a<-paste(outjpgdir,paste(ofilename,"_R10mm.pdf",sep=""),sep="/")
+pdf(nam2a)
 plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Year",ylab="R10mm")
 dev.off()
 }
-#----------- daysprcp10 ends -----------------------------------------
 
-#----------- extremedays -----------------------------------------  
 extremedays<-function(opt=0){
   if(opt==0){
     euu=uu
@@ -1629,8 +1598,8 @@ extremedays<-function(opt=0){
   dimnames(tclext)[[2]][1]<-"year"
   i=1
    for (year in years:yeare) {
-    mid1<-dd[dd$year==year,"tmax"];  mid1<-mid1[is.na(mid1)==F]
-    mid2<-dd[dd$year==year,"tmin"];  mid2<-mid2[is.na(mid2)==F]
+    mid1<-dd[dd$year==year,"tmax"];mid1<-mid1[is.na(mid1)==F]
+    mid2<-dd[dd$year==year,"tmin"];mid2<-mid2[is.na(mid2)==F]
     tclext[i,"su"]<-length(mid1[mid1>euu])
     tclext[i,"id"]<-length(mid1[mid1<eul])
     tclext[i,"tr"]<-length(mid2[mid2>elu])
@@ -1691,17 +1660,27 @@ extremedays<-function(opt=0){
   }
  
   namp<-c("","","","")
+  namppdf<-c("","","","")
   if(opt==0){
-    namp[1]<-paste(outjpgdir,paste(ofilename,"_SU25.jpg",sep=""),sep="/")
-    namp[2]<-paste(outjpgdir,paste(ofilename,"_ID0.jpg",sep=""),sep="/")
-    namp[3]<-paste(outjpgdir,paste(ofilename,"_TR20.jpg",sep=""),sep="/")
-    namp[4]<-paste(outjpgdir,paste(ofilename,"_FD0.jpg",sep=""),sep="/")
+    namp[1]<-paste(outjpgdir,paste(ofilename,"_SU25.png",sep=""),sep="/")
+    namp[2]<-paste(outjpgdir,paste(ofilename,"_ID0.png",sep=""),sep="/")
+    namp[3]<-paste(outjpgdir,paste(ofilename,"_TR20.png",sep=""),sep="/")
+    namp[4]<-paste(outjpgdir,paste(ofilename,"_FD0.png",sep=""),sep="/")
+    namppdf[1]<-paste(outjpgdir,paste(ofilename,"_SU25.pdf",sep=""),sep="/")
+    namppdf[2]<-paste(outjpgdir,paste(ofilename,"_ID0.pdf",sep=""),sep="/")
+    namppdf[3]<-paste(outjpgdir,paste(ofilename,"_TR20.pdf",sep=""),sep="/")
+    namppdf[4]<-paste(outjpgdir,paste(ofilename,"_FD0.pdf",sep=""),sep="/")
     }
   else{
-    namp[1]<-paste(outjpgdir,paste(ofilename,"_SU",as.character(euu),".jpg",sep=""),sep="/")
-    namp[2]<-paste(outjpgdir,paste(ofilename,"_ID",as.character(eul),".jpg",sep=""),sep="/")
-    namp[3]<-paste(outjpgdir,paste(ofilename,"_TR",as.character(elu),".jpg",sep=""),sep="/")
-    namp[4]<-paste(outjpgdir,paste(ofilename,"_FD",as.character(ell),".jpg",sep=""),sep="/")
+    namp[1]<-paste(outjpgdir,paste(ofilename,"_SU",as.character(euu),".png",sep=""),sep="/")
+    namp[2]<-paste(outjpgdir,paste(ofilename,"_ID",as.character(eul),".png",sep=""),sep="/")
+    namp[3]<-paste(outjpgdir,paste(ofilename,"_TR",as.character(elu),".png",sep=""),sep="/")
+    namp[4]<-paste(outjpgdir,paste(ofilename,"_FD",as.character(ell),".png",sep=""),sep="/")
+    namppdf[1]<-paste(outjpgdir,paste(ofilename,"_SU",as.character(euu),".pdf",sep=""),sep="/")
+    namppdf[2]<-paste(outjpgdir,paste(ofilename,"_ID",as.character(eul),".pdf",sep=""),sep="/")
+    namppdf[3]<-paste(outjpgdir,paste(ofilename,"_TR",as.character(elu),".pdf",sep=""),sep="/")
+    namppdf[4]<-paste(outjpgdir,paste(ofilename,"_FD",as.character(ell),".pdf",sep=""),sep="/")
+    
     }
   if(opt==0) ylab<-c("SU25","ID0","TR20","FD0")
   else ylab<-c(paste("SU",as.character(euu),sep=""), 
@@ -1712,14 +1691,15 @@ extremedays<-function(opt=0){
   xlab<-rep("year",4)
   for(i in 1:4){
   title1[i]<-paste(ylab[i],ofilename,sep="   ")
-    jpeg(file=namp[i],width=1024,height=768)
+    png(file=namp[i],width=1024,height=768,bg="white")
+    plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Year")
+    dev.off()
+    pdf(file=namppdf[i])
     plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Year")
     dev.off()
   }
 }
-#----------- extremedays ends -----------------------------------------  
 
-#----------- exceedance -----------------------------------------  
 exceedance<-function(){
   if (flag==T) return()
   a<-1:365
@@ -1755,8 +1735,8 @@ exceedance<-function(){
 #  i3<-i2-i1+1
 #  daynorm2<-daynorm2[-(i3:i2),]
   
-  yearex<-c(startyear:endyear);   txg10p<-rep(0,length(yearex))
-  txg90p<-rep(0,length(yearex));  tng10p<-rep(0,length(yearex))
+  yearex<-c(startyear:endyear);txg10p<-rep(0,length(yearex))
+  txg90p<-rep(0,length(yearex));tng10p<-rep(0,length(yearex))
   tng90p<-rep(0,length(yearex))
   d<-as.data.frame(cbind(yearex,txg10p,txg90p,tng10p,tng90p))
   colnames(d)[1]<-"year"
@@ -1835,10 +1815,10 @@ exceedance<-function(){
   
   len<-yeare-years+1
   for(i in c("tx10p","tx90p","tn10p","tn90p")){
-    if (i=="tx10p") {ii<-"_TX10P.csv";   kk<-3;nastat=7}#natma
-    if (i=="tx90p") {ii<-"_TX90P.csv";   kk<-4;nastat=7}#natma
-    if (i=="tn10p") {ii<-"_TN10P.csv";   kk<-5;nastat=8}#natmi
-    if (i=="tn90p") {ii<-"_TN90P.csv";   kk<-6;nastat=8}#natmi
+    if (i=="tx10p") {ii<-"_TX10P.csv";kk<-3;nastat=7}#natma
+    if (i=="tx90p") {ii<-"_TX90P.csv";kk<-4;nastat=7}#natma
+    if (i=="tn10p") {ii<-"_TN10P.csv";kk<-5;nastat=8}#natmi
+    if (i=="tn90p") {ii<-"_TN90P.csv";kk<-6;nastat=8}#natmi
   
     nam1<-paste(outinddir,paste(ofilename,ii,sep=""),sep="/")
     ofile<-matrix(0,len,14)
@@ -1881,15 +1861,17 @@ exceedance<-function(){
     }
     cat(file=namt,paste(latitude,longitude,i,years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-    nam2<-paste(outjpgdir,paste(ofilename,"_",toupper(i),".jpg",sep=""),sep="/")
-    jpeg(file=nam2,width=1024,height=768)
+    nam2<-paste(outjpgdir,paste(ofilename,"_",toupper(i),".png",sep=""),sep="/")
+    png(file=nam2,width=1024,height=768,bg="white")
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Year")
+    dev.off()
+    nam2a<-paste(outjpgdir,paste(ofilename,"_",toupper(i),".pdf",sep=""),sep="/")
+    pdf(file=nam2a)
     plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Year")
     dev.off()
   }
 }
-#----------- exceedance ends -----------------------------------------  
 
-#----------- index641cdd -----------------------------------------  
 index641cdd<-function(){
 ys<-yeare-years+1
 cdd<-rep(0,ys)
@@ -1942,14 +1924,16 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
     }
   cat(file=namt,paste(latitude,longitude,"cdd",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-nam2<-paste(outjpgdir,paste(ofilename,"_CDD.jpg",sep=""),sep="/")
-jpeg(nam2,width=1024,height=768)
+nam2<-paste(outjpgdir,paste(ofilename,"_CDD.png",sep=""),sep="/")
+png(nam2,width=1024,height=768,bg="white")
+plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Year",ylab="CDD")
+dev.off()
+nam2a<-paste(outjpgdir,paste(ofilename,"_CDD.pdf",sep=""),sep="/")
+pdf(nam2a)
 plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Year",ylab="CDD")
 dev.off()
 }
-#----------- index641cdd ends -----------------------------------------  
 
-#----------- index641cwd -----------------------------------------  
 index641cwd<-function(){
 ys<-yeare-years+1
 cwd<-rep(0,ys)
@@ -1996,14 +1980,16 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
     }
   cat(file=namt,paste(latitude,longitude,"cwd",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-nam2<-paste(outjpgdir,paste(ofilename,"_CWD.jpg",sep=""),sep="/")
-jpeg(nam2,width=1024,height=768)
+nam2<-paste(outjpgdir,paste(ofilename,"_CWD.png",sep=""),sep="/")
+png(nam2,width=1024,height=768,bg="white")
+plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Year",ylab="CWD")
+dev.off()
+nam2a<-paste(outjpgdir,paste(ofilename,"_CWD.pdf",sep=""),sep="/")
+pdf(nam2a)
 plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Year",ylab="CWD")
 dev.off()
 }
-#----------- index641cwd ends -----------------------------------------  
 
-#----------- rx1d -----------------------------------------  
 rx1d<-function(){
   len<-yeare-years+1
   aa1<-matrix(NA,12*len,3)
@@ -2015,18 +2001,18 @@ rx1d<-function(){
   mid<-dd[,1:4]
   for (year in years:yeare){
     aaaa<-mid[mid$year==year,]
-    aaaam1<-aaaa[aaaa$month==1,"prcp"];        aaaam2<-aaaa[aaaa$month==2,"prcp"]
-    aaaam3<-aaaa[aaaa$month==3,"prcp"];        aaaam4<-aaaa[aaaa$month==4,"prcp"]
-    aaaam5<-aaaa[aaaa$month==5,"prcp"];        aaaam6<-aaaa[aaaa$month==6,"prcp"]
-    aaaam7<-aaaa[aaaa$month==7,"prcp"];        aaaam8<-aaaa[aaaa$month==8,"prcp"]
-    aaaam9<-aaaa[aaaa$month==9,"prcp"];        aaaam10<-aaaa[aaaa$month==10,"prcp"]
-    aaaam11<-aaaa[aaaa$month==11,"prcp"];      aaaam12<-aaaa[aaaa$month==12,"prcp"]
-    aa1[jjj3,"rx1d"]<-max(aaaam1,na.rm=T);     aa1[jjj3+1,"rx1d"]<-max(aaaam2,na.rm=T)
-    aa1[jjj3+2,"rx1d"]<-max(aaaam3,na.rm=T);   aa1[jjj3+3,"rx1d"]<-max(aaaam4,na.rm=T)
-    aa1[jjj3+4,"rx1d"]<-max(aaaam5,na.rm=T);   aa1[jjj3+5,"rx1d"]<-max(aaaam6,na.rm=T)
-    aa1[jjj3+6,"rx1d"]<-max(aaaam7,na.rm=T);   aa1[jjj3+7,"rx1d"]<-max(aaaam8,na.rm=T)
-    aa1[jjj3+8,"rx1d"]<-max(aaaam9,na.rm=T);   aa1[jjj3+9,"rx1d"]<-max(aaaam10,na.rm=T)
-    aa1[jjj3+10,"rx1d"]<-max(aaaam11,na.rm=T); aa1[jjj3+11,"rx1d"]<-max(aaaam12,na.rm=T)
+    aaaam1<-aaaa[aaaa$month==1,"prcp"];aaaam2<-aaaa[aaaa$month==2,"prcp"]
+    aaaam3<-aaaa[aaaa$month==3,"prcp"];aaaam4<-aaaa[aaaa$month==4,"prcp"]
+    aaaam5<-aaaa[aaaa$month==5,"prcp"];aaaam6<-aaaa[aaaa$month==6,"prcp"]
+    aaaam7<-aaaa[aaaa$month==7,"prcp"];aaaam8<-aaaa[aaaa$month==8,"prcp"]
+    aaaam9<-aaaa[aaaa$month==9,"prcp"];aaaam10<-aaaa[aaaa$month==10,"prcp"]
+    aaaam11<-aaaa[aaaa$month==11,"prcp"];aaaam12<-aaaa[aaaa$month==12,"prcp"]
+    aa1[jjj3,"rx1d"]<-max(aaaam1,na.rm=T);aa1[jjj3+1,"rx1d"]<-max(aaaam2,na.rm=T)
+    aa1[jjj3+2,"rx1d"]<-max(aaaam3,na.rm=T);aa1[jjj3+3,"rx1d"]<-max(aaaam4,na.rm=T)
+    aa1[jjj3+4,"rx1d"]<-max(aaaam5,na.rm=T);aa1[jjj3+5,"rx1d"]<-max(aaaam6,na.rm=T)
+    aa1[jjj3+6,"rx1d"]<-max(aaaam7,na.rm=T);aa1[jjj3+7,"rx1d"]<-max(aaaam8,na.rm=T)
+    aa1[jjj3+8,"rx1d"]<-max(aaaam9,na.rm=T);aa1[jjj3+9,"rx1d"]<-max(aaaam10,na.rm=T)
+    aa1[jjj3+10,"rx1d"]<-max(aaaam11,na.rm=T);aa1[jjj3+11,"rx1d"]<-max(aaaam12,na.rm=T)
     jjj3=jjj3+12}
     aa1[,"rx1d"]<-aa1[,"rx1d"]+nacor[,"mnapr>3"]
     ofile<-matrix(0,len,14)
@@ -2057,14 +2043,16 @@ rx1d<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"rx1day",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-  nam2<-paste(outjpgdir,paste(ofilename,"_RX1day.jpg",sep=""),sep="/")
-  jpeg(nam2,width=1024,height=768)
+  nam2<-paste(outjpgdir,paste(ofilename,"_RX1day.png",sep=""),sep="/")
+  png(nam2,width=1024,height=768,bg="white")
   plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Year",ylab="RX1day")
   dev.off()
-}
-#----------- rx1d ends -----------------------------------------  
+  nam2a<-paste(outjpgdir,paste(ofilename,"_RX1day.pdf",sep=""),sep="/")
+  pdf(nam2a)
+  plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Year",ylab="RX1day")
+  dev.off()
+}# end of rx1d()
 
-#----------- rx5d -----------------------------------------  
 rx5d<-function(){
     a2<-c(0,0,0,0)
     a1<-dd[,"prcp"]
@@ -2085,18 +2073,18 @@ rx5d<-function(){
   jjj2=1
   for (year in years:yeare){
     aaaa<-a[a$year==year,]
-    aaaam1<-aaaa[aaaa$month==1,"a"];           aaaam2<-aaaa[aaaa$month==2,"a"]
-    aaaam3<-aaaa[aaaa$month==3,"a"];           aaaam4<-aaaa[aaaa$month==4,"a"]
-    aaaam5<-aaaa[aaaa$month==5,"a"];           aaaam6<-aaaa[aaaa$month==6,"a"]
-    aaaam7<-aaaa[aaaa$month==7,"a"];           aaaam8<-aaaa[aaaa$month==8,"a"]
-    aaaam9<-aaaa[aaaa$month==9,"a"];           aaaam10<-aaaa[aaaa$month==10,"a"]
-    aaaam11<-aaaa[aaaa$month==11,"a"];         aaaam12<-aaaa[aaaa$month==12,"a"]
-    aa1[jjj2,"rx5d"]<-max(aaaam1,na.rm=T);     aa1[jjj2+1,"rx5d"]<-max(aaaam2,na.rm=T)
-    aa1[jjj2+2,"rx5d"]<-max(aaaam3,na.rm=T);   aa1[jjj2+3,"rx5d"]<-max(aaaam4,na.rm=T)
-    aa1[jjj2+4,"rx5d"]<-max(aaaam5,na.rm=T);   aa1[jjj2+5,"rx5d"]<-max(aaaam6,na.rm=T)
-    aa1[jjj2+6,"rx5d"]<-max(aaaam7,na.rm=T);   aa1[jjj2+7,"rx5d"]<-max(aaaam8,na.rm=T)
-    aa1[jjj2+8,"rx5d"]<-max(aaaam9,na.rm=T);   aa1[jjj2+9,"rx5d"]<-max(aaaam10,na.rm=T)
-    aa1[jjj2+10,"rx5d"]<-max(aaaam11,na.rm=T); aa1[jjj2+11,"rx5d"]<-max(aaaam12,na.rm=T)
+    aaaam1<-aaaa[aaaa$month==1,"a"];aaaam2<-aaaa[aaaa$month==2,"a"]
+    aaaam3<-aaaa[aaaa$month==3,"a"];aaaam4<-aaaa[aaaa$month==4,"a"]
+    aaaam5<-aaaa[aaaa$month==5,"a"];aaaam6<-aaaa[aaaa$month==6,"a"]
+    aaaam7<-aaaa[aaaa$month==7,"a"];aaaam8<-aaaa[aaaa$month==8,"a"]
+    aaaam9<-aaaa[aaaa$month==9,"a"];aaaam10<-aaaa[aaaa$month==10,"a"]
+    aaaam11<-aaaa[aaaa$month==11,"a"];aaaam12<-aaaa[aaaa$month==12,"a"]
+    aa1[jjj2,"rx5d"]<-max(aaaam1,na.rm=T);aa1[jjj2+1,"rx5d"]<-max(aaaam2,na.rm=T)
+    aa1[jjj2+2,"rx5d"]<-max(aaaam3,na.rm=T);aa1[jjj2+3,"rx5d"]<-max(aaaam4,na.rm=T)
+    aa1[jjj2+4,"rx5d"]<-max(aaaam5,na.rm=T);aa1[jjj2+5,"rx5d"]<-max(aaaam6,na.rm=T)
+    aa1[jjj2+6,"rx5d"]<-max(aaaam7,na.rm=T);aa1[jjj2+7,"rx5d"]<-max(aaaam8,na.rm=T)
+    aa1[jjj2+8,"rx5d"]<-max(aaaam9,na.rm=T);aa1[jjj2+9,"rx5d"]<-max(aaaam10,na.rm=T)
+    aa1[jjj2+10,"rx5d"]<-max(aaaam11,na.rm=T);aa1[jjj2+11,"rx5d"]<-max(aaaam12,na.rm=T)
     jjj2=jjj2+12}
 
     aa1[,"rx5d"]<-aa1[,"rx5d"]+nacor[,"mnapr>3"]
@@ -2130,15 +2118,16 @@ rx5d<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"rx5day",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
-  nam2<-paste(outjpgdir,paste(ofilename,"_RX5day.jpg",sep=""),sep="/")
-  jpeg(nam2,width=1024,height=768)
+  nam2<-paste(outjpgdir,paste(ofilename,"_RX5day.png",sep=""),sep="/")
+  png(nam2,width=1024,height=768,bg="white")
   plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Year",ylab="RX5day")
   dev.off()
-  }
-#----------- rx5d ends -----------------------------------------  
+  nam2a<-paste(outjpgdir,paste(ofilename,"_RX5day.pdf",sep=""),sep="/")
+  pdf(nam2a)
+  plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Year",ylab="RX5day")
+  dev.off()
+  }# end of rx5d()
 
-
-#----------- extremedaytem -----------------------------------------  
 extremedaytem<-function(){
   len<-yeare-years+1
   aa1<-matrix(NA,12*len,6)
@@ -2149,47 +2138,47 @@ extremedaytem<-function(){
   jjj4=1
   for (year in years:yeare){
     aaaa<-dd[dd$year==year,]
-    aaaama1<-aaaa[aaaa$month==1,"tmax"];   aaaama2<-aaaa[aaaa$month==2,"tmax"]
-    aaaama3<-aaaa[aaaa$month==3,"tmax"];   aaaama4<-aaaa[aaaa$month==4,"tmax"]
-    aaaama5<-aaaa[aaaa$month==5,"tmax"];   aaaama6<-aaaa[aaaa$month==6,"tmax"]
-    aaaama7<-aaaa[aaaa$month==7,"tmax"];   aaaama8<-aaaa[aaaa$month==8,"tmax"]
-    aaaama9<-aaaa[aaaa$month==9,"tmax"];   aaaama10<-aaaa[aaaa$month==10,"tmax"]
-    aaaama11<-aaaa[aaaa$month==11,"tmax"]; aaaama12<-aaaa[aaaa$month==12,"tmax"]
+    aaaama1<-aaaa[aaaa$month==1,"tmax"];aaaama2<-aaaa[aaaa$month==2,"tmax"]
+    aaaama3<-aaaa[aaaa$month==3,"tmax"];aaaama4<-aaaa[aaaa$month==4,"tmax"]
+    aaaama5<-aaaa[aaaa$month==5,"tmax"];aaaama6<-aaaa[aaaa$month==6,"tmax"]
+    aaaama7<-aaaa[aaaa$month==7,"tmax"];aaaama8<-aaaa[aaaa$month==8,"tmax"]
+    aaaama9<-aaaa[aaaa$month==9,"tmax"];aaaama10<-aaaa[aaaa$month==10,"tmax"]
+    aaaama11<-aaaa[aaaa$month==11,"tmax"];aaaama12<-aaaa[aaaa$month==12,"tmax"]
     
-    aaaami1<-aaaa[aaaa$month==1,"tmin"];   aaaami2<-aaaa[aaaa$month==2,"tmin"]
-    aaaami3<-aaaa[aaaa$month==3,"tmin"];   aaaami4<-aaaa[aaaa$month==4,"tmin"]
-    aaaami5<-aaaa[aaaa$month==5,"tmin"];   aaaami6<-aaaa[aaaa$month==6,"tmin"]
-    aaaami7<-aaaa[aaaa$month==7,"tmin"];   aaaami8<-aaaa[aaaa$month==8,"tmin"]
-    aaaami9<-aaaa[aaaa$month==9,"tmin"];   aaaami10<-aaaa[aaaa$month==10,"tmin"]
-    aaaami11<-aaaa[aaaa$month==11,"tmin"]; aaaami12<-aaaa[aaaa$month==12,"tmin"]
+    aaaami1<-aaaa[aaaa$month==1,"tmin"];aaaami2<-aaaa[aaaa$month==2,"tmin"]
+    aaaami3<-aaaa[aaaa$month==3,"tmin"];aaaami4<-aaaa[aaaa$month==4,"tmin"]
+    aaaami5<-aaaa[aaaa$month==5,"tmin"];aaaami6<-aaaa[aaaa$month==6,"tmin"]
+    aaaami7<-aaaa[aaaa$month==7,"tmin"];aaaami8<-aaaa[aaaa$month==8,"tmin"]
+    aaaami9<-aaaa[aaaa$month==9,"tmin"];aaaami10<-aaaa[aaaa$month==10,"tmin"]
+    aaaami11<-aaaa[aaaa$month==11,"tmin"];aaaami12<-aaaa[aaaa$month==12,"tmin"]
     
-    aa1[jjj4,"txx"]<-max(aaaama1,na.rm=T);     aa1[jjj4+1,"txx"]<-max(aaaama2,na.rm=T)
-    aa1[jjj4+2,"txx"]<-max(aaaama3,na.rm=T);   aa1[jjj4+3,"txx"]<-max(aaaama4,na.rm=T)
-    aa1[jjj4+4,"txx"]<-max(aaaama5,na.rm=T);   aa1[jjj4+5,"txx"]<-max(aaaama6,na.rm=T)
-    aa1[jjj4+6,"txx"]<-max(aaaama7,na.rm=T);   aa1[jjj4+7,"txx"]<-max(aaaama8,na.rm=T)
-    aa1[jjj4+8,"txx"]<-max(aaaama9,na.rm=T);   aa1[jjj4+9,"txx"]<-max(aaaama10,na.rm=T)
-    aa1[jjj4+10,"txx"]<-max(aaaama11,na.rm=T); aa1[jjj4+11,"txx"]<-max(aaaama12,na.rm=T)
+    aa1[jjj4,"txx"]<-max(aaaama1,na.rm=T);aa1[jjj4+1,"txx"]<-max(aaaama2,na.rm=T)
+    aa1[jjj4+2,"txx"]<-max(aaaama3,na.rm=T);aa1[jjj4+3,"txx"]<-max(aaaama4,na.rm=T)
+    aa1[jjj4+4,"txx"]<-max(aaaama5,na.rm=T);aa1[jjj4+5,"txx"]<-max(aaaama6,na.rm=T)
+    aa1[jjj4+6,"txx"]<-max(aaaama7,na.rm=T);aa1[jjj4+7,"txx"]<-max(aaaama8,na.rm=T)
+    aa1[jjj4+8,"txx"]<-max(aaaama9,na.rm=T);aa1[jjj4+9,"txx"]<-max(aaaama10,na.rm=T)
+    aa1[jjj4+10,"txx"]<-max(aaaama11,na.rm=T);aa1[jjj4+11,"txx"]<-max(aaaama12,na.rm=T)
     
-    aa1[jjj4,"txn"]<-min(aaaama1,na.rm=T);     aa1[jjj4+1,"txn"]<-min(aaaama2,na.rm=T)
-    aa1[jjj4+2,"txn"]<-min(aaaama3,na.rm=T);   aa1[jjj4+3,"txn"]<-min(aaaama4,na.rm=T)
-    aa1[jjj4+4,"txn"]<-min(aaaama5,na.rm=T);   aa1[jjj4+5,"txn"]<-min(aaaama6,na.rm=T)
-    aa1[jjj4+6,"txn"]<-min(aaaama7,na.rm=T);   aa1[jjj4+7,"txn"]<-min(aaaama8,na.rm=T)
-    aa1[jjj4+8,"txn"]<-min(aaaama9,na.rm=T);   aa1[jjj4+9,"txn"]<-min(aaaama10,na.rm=T)
-    aa1[jjj4+10,"txn"]<-min(aaaama11,na.rm=T); aa1[jjj4+11,"txn"]<-min(aaaama12,na.rm=T)
+    aa1[jjj4,"txn"]<-min(aaaama1,na.rm=T);aa1[jjj4+1,"txn"]<-min(aaaama2,na.rm=T)
+    aa1[jjj4+2,"txn"]<-min(aaaama3,na.rm=T);aa1[jjj4+3,"txn"]<-min(aaaama4,na.rm=T)
+    aa1[jjj4+4,"txn"]<-min(aaaama5,na.rm=T);aa1[jjj4+5,"txn"]<-min(aaaama6,na.rm=T)
+    aa1[jjj4+6,"txn"]<-min(aaaama7,na.rm=T);aa1[jjj4+7,"txn"]<-min(aaaama8,na.rm=T)
+    aa1[jjj4+8,"txn"]<-min(aaaama9,na.rm=T);aa1[jjj4+9,"txn"]<-min(aaaama10,na.rm=T)
+    aa1[jjj4+10,"txn"]<-min(aaaama11,na.rm=T);aa1[jjj4+11,"txn"]<-min(aaaama12,na.rm=T)
 
-    aa1[jjj4,"tnx"]<-max(aaaami1,na.rm=T);     aa1[jjj4+1,"tnx"]<-max(aaaami2,na.rm=T)
-    aa1[jjj4+2,"tnx"]<-max(aaaami3,na.rm=T);   aa1[jjj4+3,"tnx"]<-max(aaaami4,na.rm=T)
-    aa1[jjj4+4,"tnx"]<-max(aaaami5,na.rm=T);   aa1[jjj4+5,"tnx"]<-max(aaaami6,na.rm=T)
-    aa1[jjj4+6,"tnx"]<-max(aaaami7,na.rm=T);   aa1[jjj4+7,"tnx"]<-max(aaaami8,na.rm=T)
-    aa1[jjj4+8,"tnx"]<-max(aaaami9,na.rm=T);   aa1[jjj4+9,"tnx"]<-max(aaaami10,na.rm=T)
-    aa1[jjj4+10,"tnx"]<-max(aaaami11,na.rm=T); aa1[jjj4+11,"tnx"]<-max(aaaami12,na.rm=T)
+    aa1[jjj4,"tnx"]<-max(aaaami1,na.rm=T);aa1[jjj4+1,"tnx"]<-max(aaaami2,na.rm=T)
+    aa1[jjj4+2,"tnx"]<-max(aaaami3,na.rm=T);aa1[jjj4+3,"tnx"]<-max(aaaami4,na.rm=T)
+    aa1[jjj4+4,"tnx"]<-max(aaaami5,na.rm=T);aa1[jjj4+5,"tnx"]<-max(aaaami6,na.rm=T)
+    aa1[jjj4+6,"tnx"]<-max(aaaami7,na.rm=T);aa1[jjj4+7,"tnx"]<-max(aaaami8,na.rm=T)
+    aa1[jjj4+8,"tnx"]<-max(aaaami9,na.rm=T);aa1[jjj4+9,"tnx"]<-max(aaaami10,na.rm=T)
+    aa1[jjj4+10,"tnx"]<-max(aaaami11,na.rm=T);aa1[jjj4+11,"tnx"]<-max(aaaami12,na.rm=T)
 
     aa1[jjj4,"tnn"]<-min(aaaami1);aa1[jjj4+1,"tnn"]<-min(aaaami2,na.rm=T)
-    aa1[jjj4+2,"tnn"]<-min(aaaami3,na.rm=T);   aa1[jjj4+3,"tnn"]<-min(aaaami4,na.rm=T)
-    aa1[jjj4+4,"tnn"]<-min(aaaami5,na.rm=T);   aa1[jjj4+5,"tnn"]<-min(aaaami6,na.rm=T)
-    aa1[jjj4+6,"tnn"]<-min(aaaami7,na.rm=T);   aa1[jjj4+7,"tnn"]<-min(aaaami8,na.rm=T)
-    aa1[jjj4+8,"tnn"]<-min(aaaami9,na.rm=T);   aa1[jjj4+9,"tnn"]<-min(aaaami10,na.rm=T)
-    aa1[jjj4+10,"tnn"]<-min(aaaami11,na.rm=T); aa1[jjj4+11,"tnn"]<-min(aaaami12,na.rm=T)
+    aa1[jjj4+2,"tnn"]<-min(aaaami3,na.rm=T);aa1[jjj4+3,"tnn"]<-min(aaaami4,na.rm=T)
+    aa1[jjj4+4,"tnn"]<-min(aaaami5,na.rm=T);aa1[jjj4+5,"tnn"]<-min(aaaami6,na.rm=T)
+    aa1[jjj4+6,"tnn"]<-min(aaaami7,na.rm=T);aa1[jjj4+7,"tnn"]<-min(aaaami8,na.rm=T)
+    aa1[jjj4+8,"tnn"]<-min(aaaami9,na.rm=T);aa1[jjj4+9,"tnn"]<-min(aaaami10,na.rm=T)
+    aa1[jjj4+10,"tnn"]<-min(aaaami11,na.rm=T);aa1[jjj4+11,"tnn"]<-min(aaaami12,na.rm=T)
     
     jjj4=jjj4+12}
     exdaytem<-as.data.frame(aa1)
@@ -2201,10 +2190,10 @@ extremedaytem<-function(){
     exdaytem[,"tnn"]<-exdaytem[,"tnn"]+nacor[,"mnatmi>3"]
 
   for(i in c("txx","txn","tnx","tnn")){
-    if (i=="txx") {ii<-"_TXx.csv";ij<-"_TXx.jpg";kk<-3;ik<-1;ki<-3}# ik=1, take max as yearly record
-    if (i=="txn") {ii<-"_TXn.csv";ij<-"_TXn.jpg";kk<-4;ik<-0;ki<-3}# ik=0, take min as yearly record
-    if (i=="tnx") {ii<-"_TNx.csv";ij<-"_TNx.jpg";kk<-5;ik<-1;ki<-4}# ki=3, take TMAX annual missing values
-    if (i=="tnn") {ii<-"_TNn.csv";ij<-"_TNn.jpg";kk<-6;ik<-0;ki<-4}# ki=4, take TMIN annual missing values
+    if (i=="txx") {ii<-"_TXx.csv";ij<-"_TXx.png";ijpdf<-"_TXx.pdf";kk<-3;ik<-1;ki<-3}# ik=1, take max as yearly record
+    if (i=="txn") {ii<-"_TXn.csv";ij<-"_TXn.png";ijpdf<-"_TXn.pdf";kk<-4;ik<-0;ki<-3}# ik=0, take min as yearly record
+    if (i=="tnx") {ii<-"_TNx.csv";ij<-"_TNx.png";ijpdf<-"_TNx.pdf";kk<-5;ik<-1;ki<-4}# ki=3, take TMAX annual missing values
+    if (i=="tnn") {ii<-"_TNn.csv";ij<-"_TNn.png";ijpdf<-"_TNn.pdf";kk<-6;ik<-0;ki<-4}# ki=4, take TMIN annual missing values
     nam<-paste(outinddir,paste(ofilename,ii,sep=""),sep="/")
     ofile<-matrix(0,len,14)
 #    ojpg<-rep(0,len)
@@ -2227,7 +2216,7 @@ extremedaytem<-function(){
       pvalue<-NA
     }
     else{
-      fit1<-lsfit(ofile[,1],ofile[,14])
+    fit1<-lsfit(ofile[,1],ofile[,14])
       out1<-ls.print(fit1,print.it=F)
       pvalue<-round(as.numeric(out1$summary[1,6]),3)
       betahat<-round(as.numeric(out1$coef.table[[1]][2,1]),3)
@@ -2236,14 +2225,16 @@ extremedaytem<-function(){
     cat(file=namt,paste(latitude,longitude,i,years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
     nam2<-paste(outjpgdir,paste(ofilename,ij,sep=""),sep="/")
-    jpeg(nam2,width=1024,height=768)
+    png(nam2,width=1024,height=768,bg="white")
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Year",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
+    dev.off()
+    nam2a<-paste(outjpgdir,paste(ofilename,ijpdf,sep=""),sep="/")
+    pdf(nam2a)
     plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Year",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
     dev.off()
   }
 }
-#----------- extremedaytem ends -----------------------------------------  
 
-#----------- index646 -----------------------------------------  
 index646<-function(){
   ys=yeare-years+1
    b<-matrix(0,ncol=2,nrow=ys)
@@ -2255,7 +2246,7 @@ index646<-function(){
    mid<-dd[dd$year==year,"prcp"]
    mid<-mid[mid>=1]
    b[i,"sdii"]<-mean(mid,na.rm=T)
-   year=year+1  }
+  year=year+1  }
   b[,"sdii"]<-b[,"sdii"]+ynacor[,"ynapr>15"]
  nam1<-paste(outinddir,paste(ofilename,"_SDII.csv",sep=""),sep="/")
  write.table(round(b,digit=1),file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
@@ -2275,16 +2266,15 @@ index646<-function(){
     }
   cat(file=namt,paste(latitude,longitude,"sdii",years,yeare,betahat,betastd,pvalue,sep=","),fill=180,append=T)
 
- nam2<-paste(outjpgdir,paste(ofilename,"_SDII.jpg",sep=""),sep="/")
- jpeg(nam2,width=1024,height=768)
+ nam2<-paste(outjpgdir,paste(ofilename,"_SDII.png",sep=""),sep="/")
+ png(nam2,width=1024,height=768,bg="white")
+ plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Year",ylab="SDII")
+ dev.off()
+ nam2a<-paste(outjpgdir,paste(ofilename,"_SDII.pdf",sep=""),sep="/")
+ pdf(nam2a)
  plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Year",ylab="SDII")
  dev.off()
 }
-#----------- index646 ends -----------------------------------------  
-
-
-
-#----------- main1 -----------------------------------------  
 
 main1<-function(){
         main<-tktoplevel()
@@ -2297,22 +2287,22 @@ main1<-function(){
 
 #cb0 <- tkcheckbutton(main);cb0Val <- cbvalue0
 
-cb1 <- tkcheckbutton(main);  cb1Val <- cbvalue1
-cb2 <- tkcheckbutton(main);  cb2Val <- cbvalue2
-cb3 <- tkcheckbutton(main);  cb3Val <- cbvalue3
-cb4 <- tkcheckbutton(main);  cb4Val <- cbvalue4
-cb5 <- tkcheckbutton(main);  cb5Val <- cbvalue5
-cb6 <- tkcheckbutton(main);  cb6Val <- cbvalue6
-cb7 <- tkcheckbutton(main);  cb7Val <- cbvalue7
-cb8 <- tkcheckbutton(main);  cb8Val <- cbvalue8
-cb9 <- tkcheckbutton(main);  cb9Val <- cbvalue9
-cb10 <- tkcheckbutton(main); cb10Val <- cbvalue10
-cb11 <- tkcheckbutton(main); cb11Val <- cbvalue11
-cb12 <- tkcheckbutton(main); cb12Val <- cbvalue12
-cb13 <- tkcheckbutton(main); cb13Val <- cbvalue13
-cb14 <- tkcheckbutton(main); cb14Val <- cbvalue14
-cb15 <- tkcheckbutton(main); cb15Val <- cbvalue15
-cb21 <- tkcheckbutton(main); cb21Val <- cbvalue21
+cb1 <- tkcheckbutton(main);cb1Val <- cbvalue1
+cb2 <- tkcheckbutton(main);cb2Val <- cbvalue2
+cb3 <- tkcheckbutton(main);cb3Val <- cbvalue3
+cb4 <- tkcheckbutton(main);cb4Val <- cbvalue4
+cb5 <- tkcheckbutton(main);cb5Val <- cbvalue5
+cb6 <- tkcheckbutton(main);cb6Val <- cbvalue6
+cb7 <- tkcheckbutton(main);cb7Val <- cbvalue7
+cb8 <- tkcheckbutton(main);cb8Val <- cbvalue8
+cb9 <- tkcheckbutton(main);cb9Val <- cbvalue9
+cb10 <- tkcheckbutton(main);cb10Val <- cbvalue10
+cb11 <- tkcheckbutton(main);cb11Val <- cbvalue11
+cb12 <- tkcheckbutton(main);cb12Val <- cbvalue12
+cb13 <- tkcheckbutton(main);cb13Val <- cbvalue13
+cb14 <- tkcheckbutton(main);cb14Val <- cbvalue14
+cb15 <- tkcheckbutton(main);cb15Val <- cbvalue15
+cb21 <- tkcheckbutton(main);cb21Val <- cbvalue21
       
 #tkconfigure(cb0,variable=cb0Val)#,value=cb1Val)
 tkconfigure(cb1,variable=cb1Val)#,value=cb1Val)
@@ -2373,7 +2363,6 @@ tkgrid(tklabel(main,text="R95p, R99p, PRCPTOT"),cb15)#695
 #tkgrid(tklabel(main,text="Annual Days with PRCP>=95 percentile"),cb17)#r95ptot
 #tkgrid(tklabel(main,text="Annual Days with PRCP>=99 percentile"),cb17)
 
-#----------- OnOK -----------------------------------------  
       OnOK <- function(){
 #filename<-tclvalue(tkgetSaveFile(filetypes="{{EXCEL Files} {.csv}} {{All files} *}"))
 #if (!nchar(filename))
@@ -2455,15 +2444,11 @@ tkgrid(tklabel(main,text="R95p, R99p, PRCPTOT"),cb15)#695
 #    tkgrid.configure(cancell.but,sticky="w")
     tkgrid(textlabel0)
   }
-#----------- OnOK ends -----------------------------------------  
-  
-#----------- done2 -----------------------------------------  
   done2<-function(){
   tkdestroy(main)
   tkfocus(start1)
 #  return()
  }
-#----------- done2 ends -----------------------------------------  
 
     ok.but <-tkbutton(main,text="   OK   ",command=OnOK,width=30)
     cancel.but<-tkbutton(main,text="CANCEL",command=done2,width=30)
@@ -2473,8 +2458,8 @@ tkgrid(tklabel(main,text="R95p, R99p, PRCPTOT"),cb15)#695
     tkgrid(tklabel(main,text="Please be patient, you will be informed once computations are done",font=fontHeading2))
     tkgrid(tklabel(main,text="",font=fontHeading))#empty line
     
-}
-#----------- main1 ends ----------------------------------------- 
+      }
+
 
 
 
@@ -2485,28 +2470,43 @@ tkgrid(tklabel(main,text="R95p, R99p, PRCPTOT"),cb15)#695
 # call getfile, read data file and store in dd.
 start1<-tktoplevel()
 
-#----------- plotx -----------------------------------------  
 plotx<-
 function (x,y,main="",xlab="",ylab="")
 {
-plot(x,y,xlab=xlab,ylab=ylab,type="b")
+plot(x,y,xlab=xlab,ylab=ylab,type="b",col="gray40")
+# least squares fit
 fit<-lsfit(x,y)
 out<-ls.print(fit,print.it=F)
 r2<-round(100*as.numeric(out$summary[1,2]),1)
 pval<-round(as.numeric(out$summary[1,6]),3)
 beta<-round(as.numeric(out$coef.table[[1]][2,1]),3)
 betaerr<-round(as.numeric(out$coef.table[[1]][2,2]),3)
-abline(fit,lwd=3)
+#abline(fit,lwd=3,col="blue")
 xy<-cbind(x,y)
 xy<-na.omit(xy)
-lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2)
+
+
+# linear fit--------------
+fit2<-lm(y ~ x)
+abline(fit2,lwd=3,col="blue")
+# confidence interval lines (optional)-------------
+newx <- seq(min(x), max(x), length.out=100)
+preds <- predict(fit2, newdata = data.frame(x=newx), 
+                 interval = 'confidence')
+polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]),col = 'lightgray', border = NA, density = 20)
+lines(newx,preds[,2],lty = 'dashed',col="blue")
+lines(newx,preds[,3],lty = 'dashed',col="blue")
+
+# lowess line
+lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2,col="red")
+
+
 subtit=paste("R2=",r2," p-value=",pval," Slope estimate=",beta," Slope error=",betaerr)
 title(main=main)
 title(sub=subtit,cex=0.5)
 }
-#----------- plotx ends -----------------------------------------  
 
-#----------- ts -----------------------------------------  
+
 ts<-function(ys=x[1,1],ye=x[nrow(x),1],x=dd) 
 {
 #
@@ -2525,9 +2525,7 @@ par(mfrow=c(1,1))
 cat(paste("Station series defined from ",x[1,1]," to ",x[nrow(x),1],"\n"))
 cat(paste("Summary statistics for window from ",ys," to ", ye,"\n"))
 }
-#----------- ts ends -----------------------------------------  
 
-#----------- ?????????? -----------------------------------------  
 function (y1=x[1,1],y2=dd[nrow(x),1],m=1,v=4,x=dd) 
 {
 #
@@ -2541,7 +2539,6 @@ xs<-x[(x[,1]>=y1)&(x[,1]<=y2)&(x[,2]==m),]
 cat(paste("Years from ",y1,"-",y2," Month=",m," Variable=",v,"\n"))
 cat(paste("Total number of days=",length(xs[,v])," Total missing=",sum(is.na(xs[,v])),"\n"))
 }
-#----------- ?????? ends -----------------------------------------  
 
 startss<-function(){
 tkwm.title(start1,"RclimDex")
@@ -2555,8 +2552,6 @@ cancel.but<-tkbutton(start1,text="Exit",command=done,width=30)
 tkgrid(start.but)
 tkgrid(cal.but)
 tkgrid(cancel.but)
-tkgrid(tklabel(start1,text="",font=fontHeading))   
-}#end of startss function
-
+tkgrid(tklabel(start1,text="",font=fontHeading))   }#end of startss function
 
 startss()
