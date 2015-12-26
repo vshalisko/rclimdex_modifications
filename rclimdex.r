@@ -33,7 +33,7 @@ library(cluster)
 require(tcltk)
 mysort<- if(getRversion()<='2.4.1') function(x,decreasing){.Internal(sort(x,decreasing=decreasing))} else function(x,decreasing){sort.int(x,decreasing=decreasing)}
 
-fontHeading <- tkfont.create(family="times",size=40,weight="bold",slant="italic")
+fontHeading <- tkfont.create(family="times",size=20,weight="bold",slant="italic")
 fontHeading1<-tkfont.create(family="times",size=20,weight="bold")
 fontHeading2<-tkfont.create(family="times",size=14,weight="bold")
 fontTextLabel <- tkfont.create(family="times",size=12)
@@ -62,7 +62,7 @@ treshold=5;winsize=5
 uu<-25;lu<-20
 ul<-0;ll<-0
 
-title1<-"Plot of Ind143";title2<-"Ind143";title3<-"Years"
+title1<-"Grafica del Ind143";title2<-"Ind143";title3<-"Años"
 frc<-function(dd,year,month,item){
 
               a<-dd[dd$year==year & dd$month==month,item]
@@ -119,7 +119,7 @@ pplotts<-function(var="prcp",type="h",tit=NULL){
     axis(side=1,at=at,labels=c(i:(i+9)))
     for(k in 1:10) abline(v=at[k],col="lightgreen")
     lines(tt,rep(0,length(tt)),type="p",col="red")
-    title(paste("Station: ",tit,", ",i,"~",min(i+9,yeare),",  ",var,sep=""))
+    title(paste("Estación: ",tit,", ",i,"~",min(i+9,yeare),",  ",var,sep=""))
   }
 }
 
@@ -212,11 +212,11 @@ ind143gsl<-function(){
   
   nam2<-paste(outjpgdir,paste(ofilename,"_GSL.png",sep=""),sep="/")
   png(file=nam2,width=1024,height=768,bg="white")
-  plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Year",ylab="GSL")
+  plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Año",ylab="GSL")
   dev.off()
   nam3<-paste(outjpgdir,paste(ofilename,"_GSL.pdf",sep=""),sep="/")
   pdf(file=nam3)
-  plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Year",ylab="GSL")
+  plotx(b[,1],b[,"gsl"],main=paste("GSL",ofilename,sep="   "),xlab="Año",ylab="GSL")
   dev.off()
 }
 
@@ -283,7 +283,7 @@ pdf(file=nam1)
 ttmp<-dd[dd$prcp>=1,"prcp"]
 ttmp<-ttmp[is.na(ttmp)==F]
 if(length(ttmp)>30){
-  hist(ttmp,main=paste("Histogram for Station:",ofilename," of PRCP>=1mm",sep=""),breaks=c(seq(0,20,2),max(30,ttmp)),xlab="",col="gray",freq=F)
+  hist(ttmp,main=paste("Histograma para estación: ",ofilename,", PRCP >= 1mm",sep=""),breaks=c(seq(0,40,2),max(100,ttmp)),xlab="",ylab="Densidad",col="gray",freq=F)
   lines(density(ttmp,bw=0.2,from=1),col="red")
 }
 pplotts(var="prcp",tit=ofilename)
@@ -815,11 +815,11 @@ hwfi<-function(){
 
   nam2<-paste(outjpgdir,paste(ofilename,"_WSDI.png",sep=""),sep="/")
   png(nam2,width=1024,height=768,bg="white")
-  plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Year")
+  plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Año")
   dev.off()
   nam3<-paste(outjpgdir,paste(ofilename,"_WSDI.pdf",sep=""),sep="/")
   pdf(nam3)
-  plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Year")
+  plotx(hwfi[,1],hwfi[,2], main=paste("WSDI",ofilename,sep="   "),ylab="WSDI",xlab="Año")
   dev.off()
 } # end of hwfi function
 
@@ -875,11 +875,11 @@ cwdi<-function(){
 
   nam2<-paste(outjpgdir,paste(ofilename,"_CSDI.png",sep=""),sep="/")
   png(nam2,width=1024,height=768,bg="white")
-  plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Year")
+  plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Año")
   dev.off()
   nam2a<-paste(outjpgdir,paste(ofilename,"_CSDI.pdf",sep=""),sep="/")
   pdf(nam2a)
-  plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Year")
+  plotx(cwdi[,1],cwdi[,2],main=paste("CSDI",ofilename,sep="   "),ylab="CSDI",xlab="Año")
   dev.off()
 } # end of cwdi function
 
@@ -930,27 +930,27 @@ r95ptot<-function(){
 
   nam4<-paste(outjpgdir,paste(ofilename,"_R95p.png",sep=""),sep="/")
   png(nam4,width=1024,height=768,bg="white")
-  plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Year",ylab="R95p")
+  plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Año",ylab="R95p")
   dev.off()
   nam4a<-paste(outjpgdir,paste(ofilename,"_R95p.pdf",sep=""),sep="/")
   pdf(nam4a)
-  plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Year",ylab="R95p")
+  plotx(dp[,1],dp[,"r95p"],main=paste("R95p",ofilename,sep="   "),xlab="Año",ylab="R95p")
   dev.off()
   nam5<-paste(outjpgdir,paste(ofilename,"_R99p.png",sep=""),sep="/")
   png(nam5,width=1024,height=768,bg="white")
-  plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Year",ylab="R99p")
+  plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Año",ylab="R99p")
   dev.off()
   nam5a<-paste(outjpgdir,paste(ofilename,"_R99p.pdf",sep=""),sep="/")
   pdf(nam5a)
-  plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Year",ylab="R99p")
+  plotx(dp[,1],dp[,"r99p"],main=paste("R99p",ofilename,sep="   "),xlab="Año",ylab="R99p")
   dev.off()
   nam6<-paste(outjpgdir,paste(ofilename,"_PRCPTOT.png",sep=""),sep="/")
   png(nam6,width=1024,height=768,bg="white")
-  plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Year",ylab="PRCPTOT")
+  plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Año",ylab="PRCPTOT")
   dev.off()
   nam6a<-paste(outjpgdir,paste(ofilename,"_PRCPTOT.pdf",sep=""),sep="/")
   pdf(nam6a)
-  plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Year",ylab="PRCPTOT")
+  plotx(dp[,1],dp[,"prcptot"],main=paste("PRCPTOT",ofilename,sep="   "),xlab="Año",ylab="PRCPTOT")
   dev.off()
 } # end of function r95ptot
 
@@ -985,11 +985,11 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
 
 nam2<-paste(outjpgdir,paste(ofilename,"_R20mm.png",sep=""),sep="/")
 png(nam2,width=1024,height=768,bg="white")
-plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Year",ylab="R20mm")
+plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Año",ylab="R20mm")
 dev.off()
 nam2a<-paste(outjpgdir,paste(ofilename,"_R20mm.pdf",sep=""),sep="/")
 pdf(nam2a)
-plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Year",ylab="R20mm")
+plotx(target[,1],target[,2],main=paste("R20mm",ofilename,sep="   "),xlab="Año",ylab="R20mm")
 dev.off()
 }
 
@@ -1026,11 +1026,11 @@ for (year in years:yeare){
 
    nam2<-paste(outjpgdir,paste(ofilename,"_R",as.character(nn),"mm.png",sep=""),sep="/")
    png(nam2,width=1024,height=768,bg="white")
-   plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Year",ylab="Rnnmm")
+   plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Año",ylab="Rnnmm")
    dev.off()
   nam2a<-paste(outjpgdir,paste(ofilename,"_R",as.character(nn),"mm.pdf",sep=""),sep="/")
   pdf(nam2a)
-  plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Year",ylab="Rnnmm")
+  plotx(target[,1],target[,2],main=paste("R",as.character(nn),"mm",ofilename,sep="   "),xlab="Año",ylab="Rnnmm")
   dev.off()
  }
 
@@ -1526,11 +1526,11 @@ dtr<-function(){# day temperature range(monthly average)
 
     nam2<-paste(outjpgdir,paste(ofilename,"_DTR.png",sep=""),sep="/")
     png(nam2,width=1024,height=768,bg="white")
-    plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Year",ylab="DTR")
+    plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Año",ylab="DTR")
     dev.off()
     nam2a<-paste(outjpgdir,paste(ofilename,"_DTR.pdf",sep=""),sep="/")
     pdf(nam2a)
-    plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Year",ylab="DTR")
+    plotx(ofile[,1],ofile[,14],main=paste("DTR",ofilename,sep="   "),xlab="Año",ylab="DTR")
     dev.off()
    } # end of dtr
 
@@ -1565,11 +1565,11 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
 
 nam2<-paste(outjpgdir,paste(ofilename,"_R10mm.png",sep=""),sep="/")
 png(nam2,width=1024,height=768)
-plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Year",ylab="R10mm")
+plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Año",ylab="R10mm")
 dev.off()
 nam2a<-paste(outjpgdir,paste(ofilename,"_R10mm.pdf",sep=""),sep="/")
 pdf(nam2a)
-plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Year",ylab="R10mm")
+plotx(target[,1],target[,2],main=paste("R10mm",ofilename,sep="   "),xlab="Año",ylab="R10mm")
 dev.off()
 }
 
@@ -1692,10 +1692,10 @@ extremedays<-function(opt=0){
   for(i in 1:4){
   title1[i]<-paste(ylab[i],ofilename,sep="   ")
     png(file=namp[i],width=1024,height=768,bg="white")
-    plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Year")
+    plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Año")
     dev.off()
     pdf(file=namppdf[i])
-    plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Year")
+    plotx(tclext[,1],tclext[,i+1],main=title1[i],ylab=ylab[i],xlab="Año")
     dev.off()
   }
 }
@@ -1863,11 +1863,11 @@ exceedance<-function(){
 
     nam2<-paste(outjpgdir,paste(ofilename,"_",toupper(i),".png",sep=""),sep="/")
     png(file=nam2,width=1024,height=768,bg="white")
-    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Year")
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Año")
     dev.off()
     nam2a<-paste(outjpgdir,paste(ofilename,"_",toupper(i),".pdf",sep=""),sep="/")
     pdf(file=nam2a)
-    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Year")
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),ylab=toupper(i),xlab="Año")
     dev.off()
   }
 }
@@ -1926,11 +1926,11 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
 
 nam2<-paste(outjpgdir,paste(ofilename,"_CDD.png",sep=""),sep="/")
 png(nam2,width=1024,height=768,bg="white")
-plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Year",ylab="CDD")
+plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Año",ylab="CDD")
 dev.off()
 nam2a<-paste(outjpgdir,paste(ofilename,"_CDD.pdf",sep=""),sep="/")
 pdf(nam2a)
-plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Year",ylab="CDD")
+plotx(target[,1],target[,2],main=paste("CDD",ofilename,sep="   "),xlab="Año",ylab="CDD")
 dev.off()
 }
 
@@ -1982,11 +1982,11 @@ write.table(target,file=nam1,append=F,quote=F,sep=", ",na="-99.9",row.names=F)
 
 nam2<-paste(outjpgdir,paste(ofilename,"_CWD.png",sep=""),sep="/")
 png(nam2,width=1024,height=768,bg="white")
-plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Year",ylab="CWD")
+plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Año",ylab="CWD")
 dev.off()
 nam2a<-paste(outjpgdir,paste(ofilename,"_CWD.pdf",sep=""),sep="/")
 pdf(nam2a)
-plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Year",ylab="CWD")
+plotx(target[,1],target[,2],main=paste("CWD",ofilename,sep="   "),xlab="Año",ylab="CWD")
 dev.off()
 }
 
@@ -2045,11 +2045,11 @@ rx1d<-function(){
 
   nam2<-paste(outjpgdir,paste(ofilename,"_RX1day.png",sep=""),sep="/")
   png(nam2,width=1024,height=768,bg="white")
-  plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Year",ylab="RX1day")
+  plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Año",ylab="RX1day")
   dev.off()
   nam2a<-paste(outjpgdir,paste(ofilename,"_RX1day.pdf",sep=""),sep="/")
   pdf(nam2a)
-  plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Year",ylab="RX1day")
+  plotx(ofile[,1],ofile[,14],main=paste("RX1day",ofilename,sep="   "),xlab="Año",ylab="RX1day")
   dev.off()
 }# end of rx1d()
 
@@ -2120,11 +2120,11 @@ rx5d<-function(){
 
   nam2<-paste(outjpgdir,paste(ofilename,"_RX5day.png",sep=""),sep="/")
   png(nam2,width=1024,height=768,bg="white")
-  plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Year",ylab="RX5day")
+  plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Año",ylab="RX5day")
   dev.off()
   nam2a<-paste(outjpgdir,paste(ofilename,"_RX5day.pdf",sep=""),sep="/")
   pdf(nam2a)
-  plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Year",ylab="RX5day")
+  plotx(ofile[,1],ofile[,14],main=paste("RX5day",ofilename,sep="   "),xlab="Año",ylab="RX5day")
   dev.off()
   }# end of rx5d()
 
@@ -2226,11 +2226,11 @@ extremedaytem<-function(){
 
     nam2<-paste(outjpgdir,paste(ofilename,ij,sep=""),sep="/")
     png(nam2,width=1024,height=768,bg="white")
-    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Year",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Año",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
     dev.off()
     nam2a<-paste(outjpgdir,paste(ofilename,ijpdf,sep=""),sep="/")
     pdf(nam2a)
-    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Year",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
+    plotx(ofile[,1],ofile[,14],main=paste(toupper(i),ofilename,sep="   "),xlab="Año",ylab=(paste(toupper(substr(i,1,2)),substr(i,3,3),sep="")))
     dev.off()
   }
 }
@@ -2268,11 +2268,11 @@ index646<-function(){
 
  nam2<-paste(outjpgdir,paste(ofilename,"_SDII.png",sep=""),sep="/")
  png(nam2,width=1024,height=768,bg="white")
- plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Year",ylab="SDII")
+ plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Año",ylab="SDII")
  dev.off()
  nam2a<-paste(outjpgdir,paste(ofilename,"_SDII.pdf",sep=""),sep="/")
  pdf(nam2a)
- plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Year",ylab="SDII")
+ plotx(b[,1],b[,2],main=paste("SDII",ofilename,sep="   "),xlab="Año",ylab="SDII")
  dev.off()
 }
 
@@ -2451,7 +2451,7 @@ tkgrid(tklabel(main,text="R95p, R99p, PRCPTOT"),cb15)#695
  }
 
     ok.but <-tkbutton(main,text="   OK   ",command=OnOK,width=30)
-    cancel.but<-tkbutton(main,text="CANCEL",command=done2,width=30)
+    cancel.but<-tkbutton(main,text="CANCELAR",command=done2,width=30)
     tkgrid(ok.but)
     tkgrid(cancel.but)
     tkgrid(tklabel(main,text="It may take more than 5 minutes to compute all the indices",font=fontHeading2))
@@ -2473,37 +2473,36 @@ start1<-tktoplevel()
 plotx<-
 function (x,y,main="",xlab="",ylab="")
 {
-plot(x,y,xlab=xlab,ylab=ylab,type="b",col="gray40")
-# least squares fit
-fit<-lsfit(x,y)
-out<-ls.print(fit,print.it=F)
-r2<-round(100*as.numeric(out$summary[1,2]),1)
-pval<-round(as.numeric(out$summary[1,6]),3)
-beta<-round(as.numeric(out$coef.table[[1]][2,1]),3)
-betaerr<-round(as.numeric(out$coef.table[[1]][2,2]),3)
-#abline(fit,lwd=3,col="blue")
-xy<-cbind(x,y)
-xy<-na.omit(xy)
+  plot(x,y,xlab=xlab,ylab=ylab,type="b",col="gray40")
 
+  fit<-lsfit(x,y) # least squares linear fit
+  out<-ls.print(fit,print.it=F)
+  r2<-round(100*as.numeric(out$summary[1,2]),1)
+  pval<-round(as.numeric(out$summary[1,6]),3)
+  beta<-round(as.numeric(out$coef.table[[1]][2,1]),3)
+  betaerr<-round(as.numeric(out$coef.table[[1]][2,2]),3)
+  #abline(fit,lwd=3,col="blue")   
 
-# linear fit--------------
-fit2<-lm(y ~ x)
-abline(fit2,lwd=3,col="blue")
-# confidence interval lines (optional)-------------
-newx <- seq(min(x), max(x), length.out=100)
-preds <- predict(fit2, newdata = data.frame(x=newx), 
+  # linear fit & confidence interval lines--------------
+  fit2<-lm(y ~ x)
+
+  newx <- seq(min(x), max(x), length.out=100)
+  preds <- predict(fit2, newdata = data.frame(x=newx), 
                  interval = 'confidence')
-polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]),col = 'lightgray', border = NA, density = 20)
-lines(newx,preds[,2],lty = 'dashed',col="blue")
-lines(newx,preds[,3],lty = 'dashed',col="blue")
+  polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]),col = 'lightgray', border = NA, density = 20)
+  lines(newx,preds[,2],lty = 'dashed',col="blue")
+  lines(newx,preds[,3],lty = 'dashed',col="blue")
+  abline(fit2,lwd=3,col="blue")
 
-# lowess line
-lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2,col="red")
+  # lowess line
+  xy<-cbind(x,y)
+  xy<-na.omit(xy)
+  lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2,col="red")
 
 
-subtit=paste("R2=",r2," p-value=",pval," Slope estimate=",beta," Slope error=",betaerr)
-title(main=main)
-title(sub=subtit,cex=0.5)
+  subtit=paste("R² = ",r2," Valor P = ",pval," Pendiente = ",beta," Error de pendiente = ",betaerr)
+  title(main=main)
+  title(sub=subtit,cex=0.5)
 }
 
 
@@ -2515,15 +2514,15 @@ ts<-function(ys=x[1,1],ye=x[nrow(x),1],x=dd)
 par(mfrow=c(3,1))
 xs<-x[(x[,1]>=ys)&(x[,1]<=ye),]
 ts.plot(xs[,4])
-title("Daily precipitation",xlab="day",ylab="precip")
+title("Precipitación diaria",xlab="dia",ylab="PRECIP")
 ts.plot(xs[,5])
-title("Daily maximum temperature",xlab="day",ylab="tmax")
+title("Máximo diario de temperatura",xlab="dia",ylab="Tmax")
 ts.plot(xs[,6])
-title("Daily minimum temperature",xlab="day",ylab="tmin")
+title("Minimo diario de temperatura",xlab="dia",ylab="Tmin")
 par(mfrow=c(1,1))
 
-cat(paste("Station series defined from ",x[1,1]," to ",x[nrow(x),1],"\n"))
-cat(paste("Summary statistics for window from ",ys," to ", ye,"\n"))
+cat(paste("Estaciones con datos de ",x[1,1]," a ",x[nrow(x),1],"\n"))
+cat(paste("Estadistica sumatoria para ventana de ",ys," a ", ye,"\n"))
 }
 
 function (y1=x[1,1],y2=dd[nrow(x),1],m=1,v=4,x=dd) 
@@ -2536,8 +2535,8 @@ function (y1=x[1,1],y2=dd[nrow(x),1],m=1,v=4,x=dd)
 #
 
 xs<-x[(x[,1]>=y1)&(x[,1]<=y2)&(x[,2]==m),]
-cat(paste("Years from ",y1,"-",y2," Month=",m," Variable=",v,"\n"))
-cat(paste("Total number of days=",length(xs[,v])," Total missing=",sum(is.na(xs[,v])),"\n"))
+cat(paste("Años ",y1,"-",y2," Mes =",m," Variable =",v,"\n"))
+cat(paste("Total número de dias =",length(xs[,v])," Total dias sin datos =",sum(is.na(xs[,v])),"\n"))
 }
 
 startss<-function(){
@@ -2546,9 +2545,9 @@ tkgrid(tklabel(start1,text="             RClimDex 1.0             ",font=fontHea
 tkgrid(tklabel(start1,text="",font=fontHeading))#empty line
 tkgrid(tklabel(start1,text="",font=fontHeading))#empty line
 #tkgrid(tklabel(start1,text="",font=fontHeading))#empty line
-start.but<-tkbutton(start1,text="Load Data and Run QC",command=getfile,width=30)
-cal.but<-tkbutton(start1,text="Indices Calculation",command=nastat,width=30)
-cancel.but<-tkbutton(start1,text="Exit",command=done,width=30)
+start.but<-tkbutton(start1,text="Cargar datos y realizar QC",command=getfile,width=30)
+cal.but<-tkbutton(start1,text="Cálculo de indicadores",command=nastat,width=30)
+cancel.but<-tkbutton(start1,text="Salir",command=done,width=30)
 tkgrid(start.but)
 tkgrid(cal.but)
 tkgrid(cancel.but)
