@@ -34,7 +34,7 @@ require(tcltk)
 mysort<- if(getRversion()<='2.4.1') function(x,decreasing){.Internal(sort(x,decreasing=decreasing))} else function(x,decreasing){sort.int(x,decreasing=decreasing)}
 
 fontHeading <- tkfont.create(family="times",size=20,weight="bold",slant="italic")
-fontHeading1<-tkfont.create(family="times",size=20,weight="bold")
+fontHeading1<-tkfont.create(family="times",size=16,weight="bold")
 fontHeading2<-tkfont.create(family="times",size=14,weight="bold")
 fontTextLabel <- tkfont.create(family="times",size=12)
 fontFixedWidth <- tkfont.create(family="courier",size=12)
@@ -283,7 +283,7 @@ pdf(file=nam1)
 ttmp<-dd[dd$prcp>=1,"prcp"]
 ttmp<-ttmp[is.na(ttmp)==F]
 if(length(ttmp)>30){
-  hist(ttmp,main=paste("Histograma para estación: ",ofilename,", PRCP >= 1mm",sep=""),breaks=c(seq(0,40,2),max(100,ttmp)),xlab="",ylab="Densidad",col="gray",freq=F)
+  hist(ttmp,main=paste("Histograma para estación: ",ofilename,", PRCP >= 1mm",sep=""),breaks=c(0,5,10,15,20,25,30,35,40,45,50,60,70,80,90,100,125,150,175,max(200,ttmp)),xlab="",ylab="Densidad",col="gray",freq=F)
   lines(density(ttmp,bw=0.2,from=1),col="red")
 }
 pplotts(var="prcp",tit=ofilename)
@@ -2473,6 +2473,7 @@ start1<-tktoplevel()
 plotx<-
 function (x,y,main="",xlab="",ylab="")
 {
+  par(oma=c(3,0,0,0))
   plot(x,y,xlab=xlab,ylab=ylab,type="b",col="gray40")
 
   fit<-lsfit(x,y) # least squares linear fit
@@ -2493,16 +2494,39 @@ function (x,y,main="",xlab="",ylab="")
   lines(newx,preds[,2],lty = 'dashed',col="blue")
   lines(newx,preds[,3],lty = 'dashed',col="blue")
   abline(fit2,lwd=3,col="blue")
+  
+  #beta_alt <- summary(fit2)$coefficients[2, 1]
+  #beta_alt <- round(as.numeric(beta_alt,3))
+  #beta_error_alt <- summary(fit2)$coefficients[2, 2]
+  #beta_error_alt <- round(as.numeric(beta_error_alt,3))
 
   # lowess line
   xy<-cbind(x,y)
   xy<-na.omit(xy)
   lines(lowess(xy[,1],xy[,2]),lwd=3,lty=2,col="red")
 
-
-  subtit=paste("R² = ",r2," Valor P = ",pval," Pendiente = ",beta," Error de pendiente = ",betaerr)
+  prefiction_sequence <- data.frame(x = c(1970,1980,1990,2000,2010,2020,2030,2040,2050,2060,2070))
+  prediction <- predict(fit2, prefiction_sequence, se.fit=TRUE, interval="confidence",level=0.95)  
+  #prediction <- round(as.numeric(prediction),1)
+  prediction_text <- paste(
+                          " 1970:",round(as.numeric(prediction$fit[1]),2), 
+                          " 1980:",round(as.numeric(prediction$fit[2]),2),
+                          " 1990:",round(as.numeric(prediction$fit[3]),2),
+                          " 2000:",round(as.numeric(prediction$fit[4]),2),
+                          " 2010:",round(as.numeric(prediction$fit[5]),2),'\n',
+                          " 2020:",round(as.numeric(prediction$fit[6]),2),
+                          " 2030:",round(as.numeric(prediction$fit[7]),2),
+                          " 2040:",round(as.numeric(prediction$fit[8]),2),                         
+                          " 2050:",round(as.numeric(prediction$fit[9]),2),
+                          " 2060:",round(as.numeric(prediction$fit[10]),2)
+  )
+  
+  subtit=paste("R² = ",r2," Valor P = ",pval," Pendiente = ",beta," Error est. de pendiente = ",betaerr)
+  #subtit=paste("R² = ",r2," Valor P = ",pval," Pendiente = ",beta_alt," Error de pendiente = ",beta_error_alt)
   title(main=main)
   title(sub=subtit,cex=0.5)
+  mtext("      Estimación:", SOUTH<-1, line=0.4, adj=0, cex=0.8, outer=TRUE)
+  mtext(prediction_text, SOUTH<-1, line=1.4, adj=0.5, cex=0.8, outer=TRUE)
 }
 
 
