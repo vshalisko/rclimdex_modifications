@@ -1,0 +1,129 @@
+Predicción de cambio climático en los cenros universitatrios de acuerdo con el modelo de circulación atmosférica ACCESS 1.0, escenario rcp45
+========================================================
+
+Variable Temperatura media anual (BIO1, °C)
+========================================================
+
+
+Por Viacheslav Shalisko 2016
+
+
+*my_path* - ruta a carpeta con la ubicación de las tablas fuente y de salida
+
+*my_actual* - nombre de tabla funtecon valores actuales en el formato DBF
+
+*my_2050* - nombre de tabla funtecon valores 2050 en el formato DBF
+
+*my_2070* - nombre de tabla funtecon valores 2070 en el formato DBF
+
+*my_points_file* - nombre de tabla con códigos de centros universitarios en formato DBF
+
+*sample_size* - tamaño de muestra para cada centro (50 puntos)
+
+*variable_name* - nombre de variable
+
+*scale_factor* - factor de escala de variable
+
+-------------------
+
+```{r}
+my_path <- 'C:\\Users\\Viacheslav\\Google Drive\\Projects_actual\\bot_ArbolesUniversitarios\\Cambio_climatico\\Centros_unversitarios\\CIMP5_sampling'
+my_points_file <- 'points_with_centers.dbf'
+my_actual <- '_actuales_bio_1.dbf'
+my_2050 <- 'ac45bi501_table.dbf'
+my_2070 <- 'ac45bi701_table.dbf'
+
+variable_name <- 'Temperatura media anual (°C)'
+sample_size <- 50
+scale_factor <- 10
+
+#file.exists(file.path(my_path, my_filename, fsep = '\\'))
+
+library(foreign)
+#require(mgcv)
+
+my_data_actual <- read.dbf(file.path(my_path, my_actual, fsep = '\\'))
+#summary(my_data_actual)
+my_data_2050 <- read.dbf(file.path(my_path, my_2050, fsep = '\\'))
+#summary(my_data_2050)
+my_data_2070 <- read.dbf(file.path(my_path, my_2070, fsep = '\\'))
+#summary(my_data_2070)
+my_points <- read.dbf(file.path(my_path, my_points_file, fsep = '\\'))
+#summary(my_points)
+
+my_data_2050$X <- NULL
+my_data_2050$Y <- NULL
+my_data_2070$X <- NULL
+my_data_2070$Y <- NULL
+
+my_data_complete <- merge(x = my_data_2050, y = my_data_2070, by = 'Red_Univer', all = TRUE)
+
+dim(my_data_complete)
+summary(my_data_complete)
+my_data_complete <- merge(x = my_data_actual, y = my_data_complete, by = 'Red_Univer', all = TRUE)
+
+my_data_complete <- merge(x = my_data_complete, y = my_points, by.x = 'Red_Univer', by.y = 'ID1', all = TRUE)
+summary(my_data_complete)
+
+```
+
+
+```{r fig.width=14, fig.height=8}
+my_data_complete[,"Centro"] <- as.factor(my_data_complete[,"Centro"])
+category_field_values <- unique(my_data_complete[,"Centro"], incomparables = FALSE)
+for (i in 1:length(category_field_values) ) {
+  
+period1 <- my_data_complete[my_data_complete$Centro == category_field_values[i],]$bio_1_clip
+period2 <- my_data_complete[my_data_complete$Centro == category_field_values[i],]$ac45bi501
+period3 <- my_data_complete[my_data_complete$Centro == category_field_values[i],]$ac45bi701
+
+period1A_date <- rep(1990,sample_size)
+period1_date <- round(runif(sample_size, min=1980, max=2000),digits = 0)
+period2_date <- rep(2050,sample_size)
+period3_date <- rep(2070,sample_size)
+
+my_data_complete_frame <- data.frame(year=c(period1_date,period2_date,period3_date),yearA=c(period1A_date,period2_date,period3_date),variable=c(period1,period2,period3))
+variable <- my_data_complete_frame[,"variable"]/scale_factor
+year <- my_data_complete_frame[,"year"]
+yearA <- my_data_complete_frame[,"yearA"]
+
+
+my_fit <- glm(variable ~ year + I(year^2))
+print(my_fit)
+
+sequence <- data.frame(year=seq(from=1970, to=2090, by=1))
+my_response <- predict(my_fit, newdata=sequence, type="response", se.fit=TRUE)
+
+lower_limit <- min(my_response$fit,variable)
+higher_limit <- max(my_response$fit,variable)
+
+par(mfcol = c(1, 2), cex = 1)
+boxplot(variable~yearA,
+        col=c("gold","lightgreen","coral"),names=c('actual','2050','2070'),
+        main=category_field_values[i],
+        xlab="periodo", ylab=variable_name)
+
+plot(year,variable, pch = 1, col = "red", main="escenario",
+              xlim=c(1975,2085),ylim=c(lower_limit,higher_limit),xlab="año", ylab=variable_name)
+
+#print(my_response)
+
+polygon(c(sequence$year,rev(sequence$year)),
+        c(my_response$fit - 1.96*my_response$se.fit, rev(my_response$fit + 1.96*my_response$se.fit)),
+        col = "lightgray", border = NA, density = 20)
+lines(sequence$year , my_response$fit, lwd = 2 , col = "red")
+lines(sequence$year , my_response$fit + 1.96*my_response$se.fit, lwd = 1 , col = "gray")
+lines(sequence$year , my_response$fit - 1.96*my_response$se.fit, lwd = 1 , col = "gray")
+
+
+#lines(smooth.spline(my_data_complete_frame[,"year"],my_data_complete_frame[,"variable"], df=5), col='red', lty=1, lwd=3)
+
+}
+```
+
+
+```{r fig.width=10, fig.height=6}
+#par(mfcol = c(1, 2), cex = 0.8)
+#boxplot(my_data_complete$bio_1_clip~my_data_complete$Centro, col=c("gold"))
+#boxplot(my_data_complete$ac45bi501~my_data_complete$Centro, col=c("gold"))
+ ```
